@@ -9,7 +9,10 @@
   "dependencies": {
     "walk": "^2.3.9",
     "async": "^2.5.0",
-    "bluebird": "^3.5.1"
+    "bluebird": "^3.5.1",
+    "flac-to-mp3": "^1.0.4",
+    "lodash": "^4.17.4",
+    "node-id3": "^0.1.0"
   },
   "devDependencies": {}
 }
