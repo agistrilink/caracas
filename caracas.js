@@ -37,7 +37,6 @@
 //          console.log('reading dir ' + name + ', ' + fullPath);
         cb();
       });
-   
 
       walker.on("errors", function (root, nodeStatsArray, next) {
         next();
