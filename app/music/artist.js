@@ -2,7 +2,7 @@
 
 const _ = require('lodash'),
     path = require('path'),
-    Directory = require('./directory');
+    Directory = require('../fs/directory');
 
 class Artist extends Directory {
     constructor(obj, options){

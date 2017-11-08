@@ -40,6 +40,10 @@ class Directory extends Base {
             .map(fullPath => {return path.basename(fullPath)});
     }
     
+    createDir(baseName){
+console.log('creating dir: ' + path.join(this.fullPath, baseName));
+    }
+
     static isA(fullPath) {
         return fs.lstatSync(fullPath).isDirectory();
     }

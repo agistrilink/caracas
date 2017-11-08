@@ -59,14 +59,17 @@
     };
 
   const album = new Album({
-      fullPath: '/home/harrold.korte/Music/master/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs'
+//      fullPath: '/home/harrold.korte/Music/master/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs'
+      fullPath: 'X:/VHE/vsc/Music/master/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs'
     }),
     master = new Collection({
-      fullPath: '/home/harrold.korte/Music/master',
+      fullPath: 'X:/VHE/vsc/Music/master',
+//      fullPath: '/home/harrold.korte/Music/master',
       encoding: 'any'
     }),
     slave = new Collection({
-      fullPath: '/home/harrold.korte/Music/slave',
+      fullPath: 'X:/VHE/vsc/Music/slave',
+//      fullPath: '/home/harrold.korte/Music/slave',
       encoding: 'mp3'
     });
 

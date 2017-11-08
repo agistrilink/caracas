@@ -2,7 +2,8 @@
 
 const _ = require('lodash'),
     path = require('path'),
-    Directory = require('./directory');
+    Artist = require('./artist'),
+    Directory = require('../fs/directory');
 
 class Collection extends Directory {
     constructor(obj, options){
@@ -10,35 +11,40 @@ class Collection extends Directory {
     }
 
     static sync(master, slave){
-        master.getArtistNames()
-            .each(artistName => {
-                if (!slave.hasArtist(artistName)){
-                    slave.addArtist(artistName);
+        console.log(slave.getArtistNames());
+        slave.getArtistNames()
+            .forEach(artistName => {
+                if (!master.hasArtist(artistName)){
+                    // remove slave.artist
                 }
-                const slaveArtist = 
+            });
+
+        console.log(master.getArtistNames());
+        master.getArtistNames()
+            .forEach(artistName => {
                 Artist.sync(
                     master.getArtist(artistName),
                     slave.hasArtist(artistName) ? slave.getArtist(artistName) : slave.addArtist(artistName)
                 );
             });
 
-        slave.getArtistNames()
-            .each(artistName => {
-                if (!master.hasArtist(artistName)){
-                    // remove slave.artist
-                }
-            });
     }
 
     hasArtist(name){
         return this.getArtistNames().indexOf(name) > -1;
     }
 
+    getArtist(name){
+        return new Artist({fullPath: path.join(this.fullPath, name), encoding: this.encoding});
+    }
+
+    addArtist(name){
+        return this.createDir(name);
+    }
+
     getArtistNames() {
         return this.getSubDirectoriesBaseNames();
     }
-
-    getArtist
 }
 
 module.exports = Collection;
