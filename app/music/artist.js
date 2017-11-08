@@ -5,13 +5,34 @@ const _ = require('lodash'),
     Directory = require('../fs/directory');
 
 class Artist extends Directory {
+    
     constructor(obj, options){
         super(obj, options);
     }
 
-    static sync(master, slave){
-        console.log('Artist.sync');
+    get name() {
+        return this.baseName;
     }
+
+    static sync(master, slave){/* 
+        slave.getAlbumNames()
+            .filter(name => {
+                return !master.hasArtist(name);
+            })
+            .forEach(artistName => {
+                slave.removeArtist(artistName);
+            });
+
+        master.getAlbumNames()
+            .forEach(artistName => {
+                Artist.sync(
+                    master.getArtist(artistName),
+                    slave.hasArtist(artistName) ? slave.getArtist(artistName) : slave.addArtist(artistName)
+                );
+            }); */
+
+    }
+
 };
 
 module.exports = Artist;

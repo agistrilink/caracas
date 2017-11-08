@@ -12,7 +12,7 @@ class Directory extends Base {
         return path.dirname(this.fullPath);
     }
 
-    get name() {
+    get baseName() {
         return path.basename(this.fullPath);
     }
 
@@ -40,13 +40,47 @@ class Directory extends Base {
             .map(fullPath => {return path.basename(fullPath)});
     }
     
+    
     createDir(baseName){
-console.log('creating dir: ' + path.join(this.fullPath, baseName));
+        console.log('creating dir: ' + path.join(this.fullPath, baseName));
+    }
+
+    deleteDir(baseName){
+        console.log('deleting dir: ' + path.join(this.fullPath, baseName));
     }
 
     static isA(fullPath) {
         return fs.lstatSync(fullPath).isDirectory();
     }
+
+    static sync_(master, slave, options){
+        options = _.defaults(options, {
+            stepInto: _.noop
+        });
+
+        slave.getSubDirectoriesBaseNames()
+            .filter(baseName => {
+                return !master.hasSubDir(baseName);
+            })
+            .forEach(baseName => {
+                slave.deleteDir(baseName);
+            });
+
+        master.getSubDirectoriesBaseNames()
+            .filter(baseName => {
+                return !slave.hasSubDir(baseName);
+            })
+            .forEach(baseName => {
+                slave.createDir(baseName);
+            });
+        
+        master.getSubDirectoriesBaseNames().forEach(baseName => {
+            options.stepInto()
+        });
+
+    }
+
+
 }
 
 module.exports = Directory;

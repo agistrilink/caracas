@@ -10,26 +10,6 @@ class Collection extends Directory {
         super(obj, _.defaults(options, {encoding: 'any'}));
     }
 
-    static sync(master, slave){
-        console.log(slave.getArtistNames());
-        slave.getArtistNames()
-            .forEach(artistName => {
-                if (!master.hasArtist(artistName)){
-                    // remove slave.artist
-                }
-            });
-
-        console.log(master.getArtistNames());
-        master.getArtistNames()
-            .forEach(artistName => {
-                Artist.sync(
-                    master.getArtist(artistName),
-                    slave.hasArtist(artistName) ? slave.getArtist(artistName) : slave.addArtist(artistName)
-                );
-            });
-
-    }
-
     hasArtist(name){
         return this.getArtistNames().indexOf(name) > -1;
     }
@@ -42,8 +22,39 @@ class Collection extends Directory {
         return this.createDir(name);
     }
 
+    removeArtist(name){
+        return this.deleteDir(name);
+    }
+
     getArtistNames() {
         return this.getSubDirectoriesBaseNames();
+    }
+
+    static sync(master, slave){
+        slave.getArtistNames()
+            .filter(name => {
+                return !master.hasArtist(name);
+            })
+            .forEach(name => {
+                slave.removeArtist(name);
+            });
+
+        master.getArtistNames()
+            .filter(name => {
+                return !slave.hasArtist(name);
+            })
+            .forEach(name => {
+                slave.addArtist(name);
+            });
+
+        master.getArtistNames()
+            .forEach(name => {
+                Artist.sync(
+                    master.getArtist(name),
+                    slave.getArtist(name)
+                );
+            });
+
     }
 }
 
