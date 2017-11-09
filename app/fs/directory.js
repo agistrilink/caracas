@@ -59,22 +59,22 @@ class Directory extends Base {
         });
 
         slave.getSubDirectoriesBaseNames()
-            .filter(baseName => {
-                return !master.hasSubDir(baseName);
+            .filter(name => {
+                return !master.hasSubDir(name);
             })
-            .forEach(baseName => {
-                slave.deleteDir(baseName);
+            .forEach(name => {
+                slave.deleteDir(name);
             });
 
         master.getSubDirectoriesBaseNames()
-            .filter(baseName => {
-                return !slave.hasSubDir(baseName);
+            .filter(name => {
+                return !slave.hasSubDir(name);
             })
-            .forEach(baseName => {
-                slave.createDir(baseName);
+            .forEach(name => {
+                slave.createDir(name);
             });
         
-        master.getSubDirectoriesBaseNames().forEach(baseName => {
+        master.getSubDirectoriesBaseNames().forEach(name => {
             options.stepInto()
         });
 
