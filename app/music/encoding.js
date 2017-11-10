@@ -29,6 +29,12 @@ class Encoding extends String {
 
         return qA > qB ? 1 : -1;
     }
+
+    isFlac() {
+        const value = this.valueOf();
+
+        return quality[value] >= FLAC;
+    }
 }
 
 module.exports = Encoding;

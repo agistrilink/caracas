@@ -12,7 +12,8 @@
     "bluebird": "^3.5.1",
     "flac-to-mp3": "^1.0.4",
     "lodash": "^4.17.4",
-    "node-id3": "^0.1.0"
+    "node-id3": "^0.1.0",
+    "ncp": "2.0.0"
   },
   "devDependencies": {}
 }

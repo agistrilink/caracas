@@ -3,7 +3,8 @@
 const _ = require('lodash'),
     fs = require('fs'),
     path = require('path'),
-    Base = require('../mvc/base');
+    Base = require('../mvc/base'),
+    ncp = require('ncp').ncp;
 
 class Directory extends Base {
 //    subDirectories = undefined;
@@ -43,6 +44,15 @@ class Directory extends Base {
     
     createDir(baseName){
         console.log('creating dir: ' + path.join(this.fullPath, baseName));
+    }
+
+    copyDir(src, dest, cb){
+        ncp(source, destination, function (err) {
+            if (err) {
+                return console.error(err);
+            }
+            console.log('done!');
+        });
     }
 
     deleteDir(baseName){

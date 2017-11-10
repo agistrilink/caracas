@@ -2,20 +2,17 @@
 
 const _ = require('lodash'),
     path = require('path'),
-    Directory = require('../fs/directory');
+    Directory = require('../fs/directory'),
+    async = require('async');
 
 class Artist extends Directory {
-    
+
     constructor(obj, options){
-        super(obj, options);
+        super(obj, _.defaults(options, {encoding: 'any'}));
     }
 
     get name() {
         return this.baseName;
-    }
-
-    constructor(obj, options){
-        super(obj, _.defaults(options, {encoding: 'any'}));
     }
 
     hasAlbum(title, options){
@@ -44,15 +41,14 @@ class Artist extends Directory {
 
     copyAlbum(from){
         const fromAlbum = new Album(from),
-            isFlacToMp3 = this.encoding === 'mp3' && Encoding.isFlac(fromAlbum.encoding);
+            isFlacToMp3 = this.encoding === 'mp3' && fromAlbum.encoding.isFlac();
 
         if (isFlacToMp3){
-
+            console.log('gonna transform to mp3: ' + fromAlbum.fullPath);
         }
         else {
-            // deep copy of fromAlbum.fullPath to this.fullPath
+            console.log('deep copy of ' + fromAlbum.fullPath + ' to ' + this.fullPath);
         }
-        return this.createDir(name);
     }
 
     removeAlbum(name){
@@ -64,6 +60,7 @@ class Artist extends Directory {
     }
 
     static sync(master, slave){
+        console.log(slave.fullPath);
         // probably master album renamed
         slave.getAlbumNames()
             .filter(name => {
