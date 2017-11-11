@@ -56,6 +56,10 @@ class Collection extends Directory {
             });
 
     }
+
+    getEncodings() {
+        // walk and collect encodings
+    }
 }
 
 module.exports = Collection;

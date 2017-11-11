@@ -3,7 +3,7 @@
 const _ = require('lodash'),
     path = require('path'),
     Directory = require('../fs/directory'),
-    Encoding = require('./encoding');
+    {Encoding} = require('./encoding');
 
 class Album extends Directory {
     constructor(obj, options){
@@ -11,7 +11,7 @@ class Album extends Directory {
     }
 
     get encoding() {
-        return new Encoding(this.fullPath.split(' ').splice(-1));
+        return Encoding.getFromKey(this.fullPath.split(' ').splice(-1));
     }
 
     get title(){

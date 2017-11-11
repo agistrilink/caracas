@@ -4,7 +4,8 @@ const _ = require('lodash'),
     fs = require('fs'),
     path = require('path'),
     Base = require('../mvc/base'),
-    ncp = require('ncp').ncp;
+    ncp = require('ncp').ncp,
+    rimraf = require('rimraf');
 
 class Directory extends Base {
 //    subDirectories = undefined;
@@ -43,20 +44,27 @@ class Directory extends Base {
     
     
     createDir(baseName){
-        console.log('creating dir: ' + path.join(this.fullPath, baseName));
+        const fullPath = path.join(this.fullPath, baseName);
+
+        console.log('creating dir: ' + fullPath);
+        if (!fs.existsSync(fullPath)){
+            fs.mkdirSync(fullPath);
+        }
     }
 
-    copyDir(src, dest, cb){
-        ncp(source, destination, function (err) {
+    copyDir(from, to/* , cb */){
+        ncp(from, to, function (err) {
             if (err) {
                 return console.error(err);
             }
-            console.log('done!');
         });
     }
 
     deleteDir(baseName){
-        console.log('deleting dir: ' + path.join(this.fullPath, baseName));
+        const fullPath = path.join(this.fullPath, baseName);
+        rimraf(fullPath, function () {
+            console.log('deleted dir: ' + fullPath);
+        });
     }
 
     static isA(fullPath) {

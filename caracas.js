@@ -6,6 +6,7 @@
     path = require('path'),
     f2m = require('flac-to-mp3'),
     Album = require('./app/music/album'),
+    {Encoding, MP3, ANY} = require('./app/music/encoding'),
     Collection = require('./app/music/collection'),
 
     traverse = function () {
@@ -58,22 +59,20 @@
       return fullPath.split(" ").splice(-1)
     };
 
-  const album = new Album({
-      fullPath: '/home/harrold.korte/Music/caracas/master/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs'
-//      fullPath: 'X:/VHE/vsc/Music/master/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs'
+  const basePath = 'X:/VHE/vsc', ///home/harrold.korte', // 
+    album = new Album({
+      fullPath: basePath + '/Music/caracas/master/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs'
     }),
     master = new Collection({
-//      fullPath: 'X:/VHE/vsc/Music/master',
-      fullPath: '/home/harrold.korte/Music/caracas/master',
-      encoding: 'any'
+      fullPath: basePath + '/Music/caracas/master',
+      encoding: ANY
     }),
     slave = new Collection({
-//      fullPath: 'X:/VHE/vsc/Music/slave',
-      fullPath: '/home/harrold.korte/Music/caracas/slave',
-      encoding: 'mp3'
+      fullPath: basePath + '/Music/caracas/slave',
+      encoding: MP3
     });
 
-  console.log('^' + album.encoding + '^');
+  console.log('^' + album.encoding.type + '^');
   console.log('|' + album.basePath + '^');
   console.log(master.getArtistNames());
   console.log(master.hasArtist('Safa.Ri'));

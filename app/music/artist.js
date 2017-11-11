@@ -3,7 +3,9 @@
 const _ = require('lodash'),
     path = require('path'),
     Directory = require('../fs/directory'),
-    async = require('async');
+    async = require('async'),
+    {Encoding, KBS320} = require('./encoding'),
+    Album = require('./album');
 
 class Artist extends Directory {
 
@@ -19,7 +21,7 @@ class Artist extends Directory {
         options = _.defaults(options, {
             strict: false
         });
-
+console.log(title);
         const name = this.getAlbumNames().find(name => {
             return options.strict ? name === title : strpos(title, name) === 0;
         });
@@ -39,15 +41,14 @@ class Artist extends Directory {
         return !!name ? new Album({fullPath: path.join(this.fullPath, name)}) : undefined;
     }
 
-    copyAlbum(from){
-        const fromAlbum = new Album(from),
-            isFlacToMp3 = this.encoding === 'mp3' && fromAlbum.encoding.isFlac();
+    copyAlbum(album){
+        const isFlacToMp3 = this.encoding.isMp3() && album.encoding.isFlac();
 
         if (isFlacToMp3){
-            console.log('gonna transform to mp3: ' + fromAlbum.fullPath);
+            console.log('gonna transform to mp3: ' + album.fullPath);
         }
         else {
-            console.log('deep copy of ' + fromAlbum.fullPath + ' to ' + this.fullPath);
+            console.log('deep copy of ' + album.fullPath + ' to ' + this.fullPath);
         }
     }
 
@@ -70,7 +71,7 @@ class Artist extends Directory {
                 slave.removeAlbum(name);
             });
 
-        // encoding differences
+        // encoding differences // X:\VHE\vsc\Music\caracas\slave
         slave.getAlbumNames({force: true})
             .filter(name => {
                 return !master.hasAlbum(name, {strict: true});
@@ -88,17 +89,17 @@ class Artist extends Directory {
 
                 // master album encoding bigger now
 
-                if (slave.encoding === 'any' || slaveAlbumEncoding.valueOf() !== Encoding.KBS320){
+                if (slave.encoding.isAny() || slaveAlbumEncoding !== KBS320){
                     slave.removeAlbum(name);
                 }
             });
 
-        master.getArtistNames()
-            .filter(name => {
-                return !slave.hasAlbum(name);
+        master.getAlbumNames()
+            .filter(title => {
+                return !slave.hasAlbum(title);
             })
-            .forEach(name => {
-                slave.copyAlbum(name);
+            .forEach(title => {
+                slave.copyAlbum(master.getAlbum(title));
             });
     }
 
