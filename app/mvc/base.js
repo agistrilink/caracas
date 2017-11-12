@@ -1,6 +1,6 @@
 class Base {
-    constructor(data, options) {
-        Object.assign(this, data);
+    constructor(obj, options) {
+        Object.assign(this, obj);
     }
 }
 

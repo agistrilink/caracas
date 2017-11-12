@@ -3,11 +3,12 @@
 const _ = require('lodash'),
     path = require('path'),
     Artist = require('./artist'),
-    Directory = require('../fs/directory');
+    Directory = require('../fs/directory'),
+    {ANY} = require('./encoding');
 
 class Collection extends Directory {
     constructor(obj, options){
-        super(obj, _.defaults(options, {encoding: 'any'}));
+        super(_.defaults(obj, {encoding: ANY}), options);
     }
 
     hasArtist(name){

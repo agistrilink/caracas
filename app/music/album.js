@@ -21,6 +21,14 @@ class Album extends Directory {
 
         return splitted.join(' ');
     }
+
+    importTrack(track){
+
+    }
+
+    static convertFlacToMp3(album, toFullPath){
+        console.log('gonna transform to mp3: ' + album.fullPath);
+    }
 };
 
 module.exports = Album;

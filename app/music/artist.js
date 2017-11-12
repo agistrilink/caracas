@@ -4,13 +4,13 @@ const _ = require('lodash'),
     path = require('path'),
     Directory = require('../fs/directory'),
     async = require('async'),
-    {Encoding, KBS320} = require('./encoding'),
+    {Encoding, KBS320, ANY} = require('./encoding'),
     Album = require('./album');
 
 class Artist extends Directory {
 
     constructor(obj, options){
-        super(obj, _.defaults(options, {encoding: 'any'}));
+        super(_.defaults(obj, {encoding: ANY}), options);
     }
 
     get name() {
@@ -21,7 +21,7 @@ class Artist extends Directory {
         options = _.defaults(options, {
             strict: false
         });
-console.log(title);
+
         const name = this.getAlbumNames().find(name => {
             return options.strict ? name === title : strpos(title, name) === 0;
         });
@@ -41,11 +41,25 @@ console.log(title);
         return !!name ? new Album({fullPath: path.join(this.fullPath, name)}) : undefined;
     }
 
+    importAlbum(album){
+        const isFlacToMp3 = this.encoding.isMp3() && album.encoding.isFlac();
+
+        if (!isFlacToMp3){
+            Directory.copyDir(album.fullPath, this.fullPath);
+            return;
+        }
+
+        const toAlbum = this.newAlbum(album.baseName);
+        album.getTracks().forEach(track => {
+            toAlbum.importTrack(track);
+        });
+    }
+
     copyAlbum(album){
         const isFlacToMp3 = this.encoding.isMp3() && album.encoding.isFlac();
 
         if (isFlacToMp3){
-            console.log('gonna transform to mp3: ' + album.fullPath);
+            Album.convertFlacToMp3(album, this.fullPath);
         }
         else {
             console.log('deep copy of ' + album.fullPath + ' to ' + this.fullPath);
@@ -61,6 +75,8 @@ console.log(title);
     }
 
     static sync(master, slave){
+        const isSlaveMp3 = slave.encoding.isMp3();
+
         console.log(slave.fullPath);
         // probably master album renamed
         slave.getAlbumNames()
@@ -94,12 +110,25 @@ console.log(title);
                 }
             });
 
+
         master.getAlbumNames()
             .filter(title => {
                 return !slave.hasAlbum(title);
             })
             .forEach(title => {
-                slave.copyAlbum(master.getAlbum(title));
+                const album = master.getAlbum(title),
+                    isFlacToMp3 = isSlaveMp3 && album.encoding.isFlac();
+
+                if (!isFlacToMp3){
+                    // deep copy album to slave
+
+                    return;
+                }
+
+                // convert
+                slave.convertAlbum(album);
+
+                slave.importAlbum(album);
             });
     }
 

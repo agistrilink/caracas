@@ -3,21 +3,12 @@
 const _ = require('lodash'),
     fs = require('fs'),
     path = require('path'),
-    Base = require('../mvc/base'),
+    File = require('./file'),
+    Node = require('../fs/node'),
     ncp = require('ncp').ncp,
     rimraf = require('rimraf');
 
-class Directory extends Base {
-//    subDirectories = undefined;
-
-    get basePath() {
-        return path.dirname(this.fullPath);
-    }
-
-    get baseName() {
-        return path.basename(this.fullPath);
-    }
-
+class Directory extends Node {
     hasSubDir(baseName){
         return this.getSubDirectories().indexOf(path.join(this.fullPath, baseName)) > -1;
     }
@@ -35,6 +26,20 @@ class Directory extends Base {
         return this.subDirectories = fs.readdirSync(this.fullPath)
             .map(baseName => path.join(this.fullPath, baseName))
             .filter(Directory.isA);
+    }
+
+    getFiles(options){
+        options = _.defaults(options, {
+            force: false
+        });
+
+        if (this.files && !options.force){
+            return this.files;
+        }
+
+        return this.files = fs.readdirSync(this.fullPath)
+            .map(baseName => path.join(this.fullPath, baseName))
+            .filter(File.isA);
     }
 
     getSubDirectoriesBaseNames(options) {
