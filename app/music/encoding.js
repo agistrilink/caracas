@@ -32,10 +32,14 @@ class Encoding extends Base {
         return a.weight > b.weight ? 1 : -1;
     }
 
-    static getFromKey(key) {
+    static getFromKey(key, options) {
+        options = _.defaults(options, {
+            doThrow: true
+        });
+
         const encoding = map[key];
 
-        if (!encoding) {
+        if (!encoding && options.doThrow) {
             throw 'unknown file extension: ' + key;
         }
 

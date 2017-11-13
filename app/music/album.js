@@ -12,7 +12,12 @@ class Album extends Directory {
     }
 
     get encoding() {
-        return Encoding.getFromKey(this.fullPath.split(' ').splice(-1));
+        const key = this.fullPath.split(' ').splice(-1).shift(),
+            encoding = Encoding.getFromKey(key);
+
+        console.log('encoding key: ' + key + ', encoding: ' + encoding);
+
+        return encoding;
     }
 
     get title(){

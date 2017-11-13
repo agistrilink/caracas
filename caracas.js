@@ -10,6 +10,7 @@
         Album = require('./app/music/album'),
         {Encoding, MP3, ANY} = require('./app/music/encoding'),
         Collection = require('./app/music/collection'),
+        TaskRunner = require('./app/batch/taskRunner'),
 
         traverse = function () {
             const walker = walk.walk('/tmp');
@@ -66,7 +67,7 @@
             fullPath: config.basePath + '/Music/caracas/master/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs'
         }),
         master = new Collection({
-            fullPath: config.basePath + '/Music/caracas/master',
+            fullPath: config.basePath + '/Music/caracas/master', // 'Y:/Archive/Music/256GB', //
             encoding: ANY
         }),
         slave = new Collection({
@@ -74,10 +75,16 @@
             encoding: MP3
         });
 
+/*
+    console.log(master.getEncodings());
+    return;
+*/
+
     console.log('^' + album.encoding.type + '^');
     console.log('|' + album.basePath + '^');
     console.log(master.getArtistNames());
     console.log(master.hasArtist('Safa.Ri'));
 
-    Collection.sync(master, slave);
+    const jobs = Collection.sync(master, slave, {batch: true});
+    new TaskRunner({jobs: jobs}).runSync({from: 0, to: 99});
 }());

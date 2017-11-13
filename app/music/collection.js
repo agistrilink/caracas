@@ -4,7 +4,7 @@ const _ = require('lodash'),
     path = require('path'),
     Artist = require('./artist'),
     Directory = require('../fs/directory'),
-    {ANY} = require('./encoding');
+    {Encoding, ANY} = require('./encoding');
 
 class Collection extends Directory {
     constructor(obj, options){
@@ -58,8 +58,25 @@ class Collection extends Directory {
 
     }
 
+    // helper function to identify and manually adjust albums in collection with wrong encoding label
     getEncodings() {
+        const encodings = [];
+
         // walk and collect encodings
+        this.getSubDirectories().forEach(artistFullPath => {
+            new Artist({fullPath: artistFullPath}).getSubDirectories().forEach(albumFullPath => {
+                const encoding = albumFullPath.split(' ').splice(-1).shift();
+
+                if (!Encoding.getFromKey(encoding, {doThrow: false})){
+                    console.log('unknown encoding: ' + albumFullPath);
+                }
+                else if (encodings.indexOf(encoding) === -1){
+                    encodings.push(encoding);
+                }
+            });
+        })
+
+        return encodings;
     }
 }
 
