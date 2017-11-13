@@ -6,7 +6,7 @@ const _ = require('lodash'),
     {Encoding, FLAC, MP3} = require('./encoding');
 
 class Track extends File {
-    constructor(obj, options){
+    constructor(obj, options) {
         super(obj, options);
     }
 
@@ -14,11 +14,11 @@ class Track extends File {
         return Encoding.getFromKey(path.extname(this.fullPath).slice(1));
     }
 
-    get title(){
+    get title() {
         return path.basename(this.fullPath, '.' + this.encoding.type);
     }
 
-    static convertFlacToMp3(track, toAlbum){
+    static convertFlacToMp3(track, toAlbum) {
         if (!track.encoding.isFlac()) {
             throw 'cannot convert non-flac file: ' + track.fullPath;
         }
@@ -35,11 +35,11 @@ class Track extends File {
 
         // NOTE: ffmpeg outputs to standard error - Always has, always will no doubt
 
-        ffmpeg.stdout.on("data", function(data) {
+        ffmpeg.stdout.on("data", function (data) {
 //            onData({out: data})
         });
 
-        ffmpeg.stderr.on("data", function(data) {
+        ffmpeg.stderr.on("data", function (data) {
 //            onData({err: data})
         });
     };

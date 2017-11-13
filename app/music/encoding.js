@@ -24,8 +24,8 @@ class Encoding extends Base {
         return this.type === TYPE.MP3;
     }
 
-    static compare(a, b){
-        if (a.weight === b.weight){
+    static compare(a, b) {
+        if (a.weight === b.weight) {
             return 0;
         }
 
@@ -35,7 +35,7 @@ class Encoding extends Base {
     static getFromKey(key) {
         const encoding = map[key];
 
-        if (!encoding){
+        if (!encoding) {
             throw 'unknown file extension: ' + key;
         }
 
@@ -43,7 +43,7 @@ class Encoding extends Base {
     }
 }
 
-    
+
 const KBS192 = new Encoding({type: TYPE.MP3, weight: 10}),
     KBS256 = new Encoding({type: TYPE.MP3, weight: 20}),
     VBR = new Encoding({type: TYPE.MP3, weight: 30}),
