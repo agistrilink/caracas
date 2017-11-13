@@ -3,7 +3,8 @@
 const _ = require('lodash'),
     path = require('path'),
     Directory = require('../fs/directory'),
-    {Encoding} = require('./encoding');
+    {Encoding} = require('./encoding'),
+    Track = require('./track');
 
 class Album extends Directory {
     constructor(obj, options){
@@ -15,15 +16,26 @@ class Album extends Directory {
     }
 
     get title(){
-        const splitted = this.fullPath.split(' ');
+        const splitted = this.baseName.split(' ');
 
         splitted.splice(-1);
 
         return splitted.join(' ');
     }
 
-    importTrack(track){
+    get tracks() {
+        return this.getFiles()
+            .filter(fullPath => {
+                return Track.isA(fullPath);
+            })
+            .map(fullPath => {
+                return new Track({fullPath: fullPath});
+            });
+    }
 
+    importTrack(track){
+//        console.log(this.baseName + ': importing track ' + track.title);
+        Track.convertFlacToMp3(track, this.fullPath);
     }
 
     static convertFlacToMp3(album, toFullPath){

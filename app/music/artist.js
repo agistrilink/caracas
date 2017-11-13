@@ -29,6 +29,13 @@ class Artist extends Directory {
         return !!name;
     }
 
+    newAlbum(title, encoding){
+        console.log(title);
+        return new Album({
+            fullPath: this.createDir(title + ' ' + encoding.ext)
+        });
+    }
+
     getAlbum(title, options){
         options = _.defaults(options, {
             strict: false
@@ -41,16 +48,16 @@ class Artist extends Directory {
         return !!name ? new Album({fullPath: path.join(this.fullPath, name)}) : undefined;
     }
 
-    importAlbum(album){
-        const isFlacToMp3 = this.encoding.isMp3() && album.encoding.isFlac();
+    importAlbum(fromAlbum){
+        const isFlacToMp3 = this.encoding.isMp3() && fromAlbum.encoding.isFlac();
 
         if (!isFlacToMp3){
-            Directory.copyDir(album.fullPath, this.fullPath);
+            Directory.copyDir(fromAlbum.fullPath, this.fullPath);
             return;
         }
 
-        const toAlbum = this.newAlbum(album.baseName);
-        album.getTracks().forEach(track => {
+        const toAlbum = this.newAlbum(fromAlbum.title, KBS320);
+        fromAlbum.tracks.forEach(track => {
             toAlbum.importTrack(track);
         });
     }
@@ -81,7 +88,10 @@ class Artist extends Directory {
         // probably master album renamed
         slave.getAlbumNames()
             .filter(name => {
-                return !master.hasAlbum(new Album(name).title);
+                console.log(name);
+                const album = new Album(name);
+                console.log(album);
+                return !master.hasAlbum(album.title);
             })
             .forEach(name => {
                 slave.removeAlbum(name);
@@ -124,9 +134,6 @@ class Artist extends Directory {
 
                     return;
                 }
-
-                // convert
-                slave.convertAlbum(album);
 
                 slave.importAlbum(album);
             });

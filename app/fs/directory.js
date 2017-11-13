@@ -55,6 +55,8 @@ class Directory extends Node {
         if (!fs.existsSync(fullPath)){
             fs.mkdirSync(fullPath);
         }
+
+        return fullPath;
     }
 
     copyDir(from, to/* , cb */){

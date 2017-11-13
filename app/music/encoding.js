@@ -44,15 +44,15 @@ class Encoding extends Base {
 }
 
 
-const KBS192 = new Encoding({type: TYPE.MP3, weight: 10}),
-    KBS256 = new Encoding({type: TYPE.MP3, weight: 20}),
-    VBR = new Encoding({type: TYPE.MP3, weight: 30}),
-    KBS320 = new Encoding({type: TYPE.MP3, weight: 100}),
+const KBS192 = new Encoding({type: TYPE.MP3, ext: '192kbs', weight: 10}),
+    KBS256 = new Encoding({type: TYPE.MP3, ext: '256kbs', weight: 20}),
+    VBR = new Encoding({type: TYPE.MP3, ext: 'vbr', weight: 30}),
+    KBS320 = new Encoding({type: TYPE.MP3, ext: '320kbs', weight: 100}),
 
-    F16_44 = new Encoding({type: TYPE.FLAC, weight: 1000}),
-    F24_44 = new Encoding({type: TYPE.FLAC, weight: 2000}),
-    F24_96 = new Encoding({type: TYPE.FLAC, weight: 3000}),
-    F24_192 = new Encoding({type: TYPE.FLAC, weight: 4000}),
+    F16_44 = new Encoding({type: TYPE.FLAC, ext: 'flac', weight: 1000}),
+    F24_44 = new Encoding({type: TYPE.FLAC, ext: '24-44', weight: 2000}),
+    F24_96 = new Encoding({type: TYPE.FLAC, ext: '24-96', weight: 3000}),
+    F24_192 = new Encoding({type: TYPE.FLAC, ext: '24-192', weight: 4000}),
 
     W16_44 = new Encoding({type: TYPE.WAV, weight: 10000}),
 
