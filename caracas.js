@@ -71,7 +71,7 @@
             encoding: ANY
         }),
         slave = new Collection({
-            fullPath: config.basePath + '/Music/caracas/slave',
+            fullPath: config.basePath + '/Music/caracas/slave',//'F:/Music',//
             encoding: MP3
         });
 

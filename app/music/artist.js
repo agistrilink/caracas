@@ -82,7 +82,7 @@ class Artist extends Directory {
     }
 
     static sync(master, slave){
-        const isSlaveMp3 = slave.encoding.isMp3();
+        const isSlaveEncodingMp3 = slave.encoding.isMp3();
 
         console.log(slave.fullPath);
         // probably master album renamed
@@ -127,7 +127,7 @@ class Artist extends Directory {
             })
             .forEach(title => {
                 const album = master.getAlbum(title),
-                    isFlacToMp3 = isSlaveMp3 && album.encoding.isFlac();
+                    isFlacToMp3 = isSlaveEncodingMp3 && album.encoding.isFlac();
 
                 if (!isFlacToMp3){
                     // deep copy album to slave

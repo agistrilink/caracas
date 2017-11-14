@@ -78,6 +78,7 @@ class Directory extends Node {
         return fs.lstatSync(fullPath).isDirectory();
     }
 
+    // FFS
     static sync_(master, slave, options){
         options = _.defaults(options, {
             stepInto: _.noop

@@ -31,7 +31,11 @@ class Collection extends Directory {
         return this.getSubDirectoriesBaseNames();
     }
 
-    static sync(master, slave){
+    static sync(master, slave, options){
+        options = _.defaults(options, {
+            regex: /.+/ // e.g. /^[A-D]/
+        });
+
         slave.getArtistNames()
             .filter(name => {
                 return !master.hasArtist(name);
@@ -49,6 +53,9 @@ class Collection extends Directory {
             });
 
         master.getArtistNames()
+            .filter(name => {
+                return name.search(options.regex) >= 0;
+            })
             .forEach(name => {
                 Artist.sync(
                     master.getArtist(name),
