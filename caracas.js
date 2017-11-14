@@ -1,9 +1,7 @@
 'use strict';
 
 (function () {
-    const os = require('os'),
-        env = os.hostname() === 'w5aj' ? 'idealo' : 'home',
-        config = require('./app/config/' + env),
+    const config = require('./app/config/config'),
         walk = require('walk'),
         path = require('path'),
         f2m = require('flac-to-mp3'),
@@ -11,6 +9,8 @@
         {Encoding, MP3, ANY} = require('./app/music/encoding'),
         Collection = require('./app/music/collection'),
         TaskRunner = require('./app/batch/taskRunner'),
+        PersistenceSync = require('./app/mvc/persistenceSync'),
+        storage = new PersistenceSync(),
 
         traverse = function () {
             const walker = walk.walk('/tmp');
@@ -79,12 +79,14 @@
     console.log(master.getEncodings());
     return;
 */
+//    storage.save('harrold', 50);
+    console.log(storage.load('harrold'));
+return;
 
     console.log('^' + album.encoding.type + '^');
     console.log('|' + album.basePath + '^');
     console.log(master.getArtistNames());
     console.log(master.hasArtist('Safa.Ri'));
 
-    const jobs = Collection.sync(master, slave, {batch: true});
-    new TaskRunner({jobs: jobs}).runSync({from: 0, to: 99});
+    Collection.sync(master, slave, {batch: true});
 }());

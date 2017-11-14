@@ -8,9 +8,9 @@ const _ = require('lodash'),
     rimraf = require('rimraf'),
     mix =require('../mvc/mix'),
     Job = require('../batch/job'),
-    Persistence = require('../mvc/persistence');
+    PersistenceSyncMixin = require('../mvc/persistenceSyncMixin');
 
-class Node extends Base { // FFS: mix(Job).with(Persistence) {
+class Node extends Base { // FFS: mix(Job).with(PersistenceSyncMixin) {
     get basePath() {
         return path.dirname(this.fullPath);
     }

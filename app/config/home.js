@@ -3,4 +3,7 @@ const common = require('./common'),
 
 module.exports = deepAssign(common, {
     basePath: 'X:/VHE/vsc',
+    storage: {
+        dir: 'X:/VHE/tmp/node-persist/caracas'
+    }
 });
