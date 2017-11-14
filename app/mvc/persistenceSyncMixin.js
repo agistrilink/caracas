@@ -31,5 +31,6 @@ const _ = require('lodash'),
         }
     };
 
+storage.initSync();
 
 module.exports = PersistenceSyncMixin;

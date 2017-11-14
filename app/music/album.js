@@ -38,9 +38,9 @@ class Album extends Directory {
             });
     }
 
-    importTrack(track){
+    importTrack(track, cb){
 //        console.log(this.baseName + ': importing track ' + track.title);
-        Track.convertFlacToMp3(track, this.fullPath);
+        Track.convertFlacToMp3(track, this.fullPath, cb);
     }
 
     static convertFlacToMp3(album, toFullPath){

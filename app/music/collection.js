@@ -2,6 +2,7 @@
 
 const _ = require('lodash'),
     path = require('path'),
+    async = require('async'),
     Artist = require('./artist'),
     Directory = require('../fs/directory'),
     {Encoding, ANY} = require('./encoding');
@@ -52,6 +53,7 @@ class Collection extends Directory {
                 slave.addArtist(name);
             });
 
+/*
         master.getArtistNames()
             .filter(name => {
                 return name.search(options.regex) >= 0;
@@ -62,7 +64,26 @@ class Collection extends Directory {
                     slave.getArtist(name)
                 );
             });
+*/
 
+        const q = async.queue((name, qcb) => {
+            Artist.sync(
+                master.getArtist(name),
+                slave.getArtist(name),
+                qcb
+            );
+        }, 1);
+
+        q.drain = _ => {
+            console.log('ready!!');
+        };
+
+        q.push(
+            master.getArtistNames()
+                .filter(name => {
+                    return name.search(options.regex) >= 0;
+                })
+        );
     }
 
     // helper function to identify and manually adjust albums in collection with wrong encoding label

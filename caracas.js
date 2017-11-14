@@ -64,29 +64,26 @@
 
     const basePath = 'X:/VHE/vsc', ///home/harrold.korte', //
         album = new Album({
-            fullPath: config.basePath + '/Music/caracas/master/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs'
+            fullPath: config.master.fullPath + '/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs'
         }),
-        master = new Collection({
-            fullPath: config.basePath + '/Music/caracas/master', // 'Y:/Archive/Music/256GB', //
-            encoding: ANY
-        }),
-        slave = new Collection({
-            fullPath: config.basePath + '/Music/caracas/slave',//'F:/Music',//
-            encoding: MP3
-        });
+        master = new Collection({fullPath: config.master.fullPath, encoding: ANY}),
+        slave = new Collection({fullPath: config.slave.fullPath, encoding: MP3});
 
 /*
     console.log(master.getEncodings());
     return;
 */
-//    storage.save('harrold', 50);
+/*
+    storage.save('harrold', 50);
     console.log(storage.load('harrold'));
 return;
-
+*/
+/*
     console.log('^' + album.encoding.type + '^');
     console.log('|' + album.basePath + '^');
     console.log(master.getArtistNames());
     console.log(master.hasArtist('Safa.Ri'));
+*/
 
     Collection.sync(master, slave, {batch: true});
 }());

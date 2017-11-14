@@ -48,18 +48,27 @@ class Artist extends Directory {
         return !!name ? new Album({fullPath: path.join(this.fullPath, name)}) : undefined;
     }
 
-    importAlbum(fromAlbum){
+    importAlbum(fromAlbum, cb){
         const isFlacToMp3 = this.encoding.isMp3() && fromAlbum.encoding.isFlac();
 
         if (!isFlacToMp3){
-            Directory.copyDir(fromAlbum.fullPath, this.fullPath);
-            return;
+            return Directory.copyDir(fromAlbum.fullPath, this.fullPath, cb);
         }
 
         const toAlbum = this.newAlbum(fromAlbum.title, KBS320);
+/*
         fromAlbum.tracks.forEach(track => {
             toAlbum.importTrack(track);
         });
+*/
+
+        const q = async.queue((track, qcb) => {
+            toAlbum.importTrack(track, qcb);
+        }, 1);
+
+        q.drain = cb;
+
+        q.push(fromAlbum.tracks);
     }
 
     copyAlbum(album){
@@ -81,7 +90,7 @@ class Artist extends Directory {
         return this.getSubDirectoriesBaseNames(options);
     }
 
-    static sync(master, slave){
+    static sync(master, slave, cb){
         const isSlaveEncodingMp3 = slave.encoding.isMp3();
 
         console.log(slave.fullPath);
@@ -121,6 +130,7 @@ class Artist extends Directory {
             });
 
 
+/*
         master.getAlbumNames()
             .filter(title => {
                 return !slave.hasAlbum(title);
@@ -137,6 +147,21 @@ class Artist extends Directory {
 
                 slave.importAlbum(album);
             });
+*/
+
+        const q = async.queue((title, qcb) => {
+            slave.importAlbum(master.getAlbum(title), qcb);
+        }, 1);
+
+        q.drain = cb;
+
+        q.push(
+            master.getAlbumNames()
+                .filter(title => {
+                    return !slave.hasAlbum(title);
+                })
+        );
+
     }
 
 };

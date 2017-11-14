@@ -59,12 +59,8 @@ class Directory extends Node {
         return fullPath;
     }
 
-    copyDir(from, to/* , cb */){
-        ncp(from, to, function (err) {
-            if (err) {
-                return console.error(err);
-            }
-        });
+    static copyDir(from, to , cb ){
+        ncp(from, to, cb);
     }
 
     deleteDir(baseName){

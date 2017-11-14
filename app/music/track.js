@@ -20,30 +20,33 @@ class Track extends File {
         return path.basename(this.fullPath, '.' + this.encoding.type);
     }
 
-    static convertFlacToMp3(track, toFullPath) {
+    static convertFlacToMp3(track, toFullPath, cb) {
         if (!track.encoding.isFlac()) {
             throw 'cannot convert non-flac file: ' + track.fullPath;
         }
 
         const outputBaseName = track.title + '.' + MP3.type,
             outputFullPath = toFullPath + '/' + outputBaseName,
+            // https://ffmpeg.org/ffmpeg.html#Generic-options
             args = [
                 "-i", track.fullPath,
                 "-ab", "320k",
                 "-map_metadata", "0",
                 "-id3v2_version", "3",
+//                "-logLevel", "error", // default info level
                 "-y",
                 outputFullPath
             ],
             ffmpeg = childProcess.spawn("ffmpeg", args);
 
         ffmpeg.stdout.on('close', function (data) {
-            console.log('converted!!: ' + outputBaseName);
+            console.log(data);
+            cb();
         });
 
         // NOTE: ffmpeg outputs to standard error - Always has, always will no doubt
         ffmpeg.stderr.on('data', function (data) {
-            console.log(data.toString());
+            console.log(data);
         });
     };
 
