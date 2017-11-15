@@ -2,6 +2,16 @@
 const _ = require('lodash'),
     async = require('async');
 
+class MixinBuilder {
+    constructor(superclass) {
+        this.superclass = superclass;
+    }
+
+    with(...mixins) {
+        return mixins.reduce((c, mixin) => mixin(c), this.superclass);
+    }
+}
+
 class Miracle extends _ {
 //    _ = require('lodash'),
     static waterfall(list, done) {
@@ -22,6 +32,10 @@ class Miracle extends _ {
             args3 = (i === -1) ? [] : args1.splice(i).slice(1);
 
         return (...args2) => fn(...args1, ...args2, ...args3);
+    }
+
+    static mix(superclass) {
+        return new MixinBuilder(superclass);
     }
 }
 
