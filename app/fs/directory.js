@@ -59,7 +59,7 @@ class Directory extends Node {
         return fullPath;
     }
 
-    static copyDir(from, to , cb ){
+    static copyDir(from, to , cb){
         ncp(from, to, cb);
     }
 

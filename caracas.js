@@ -5,13 +5,16 @@
         walk = require('walk'),
         path = require('path'),
         f2m = require('flac-to-mp3'),
+        rimraf = require('rimraf'),
+        async = require('async'),
+        Directory = require('./app/fs/directory'),
         Album = require('./app/music/album'),
         {Encoding, MP3, ANY} = require('./app/music/encoding'),
         Collection = require('./app/music/collection'),
         TaskRunner = require('./app/batch/taskRunner'),
         PersistenceSync = require('./app/mvc/persistenceSync'),
         storage = new PersistenceSync(),
-
+        _ = require('./app/mvc/miracle'),
         traverse = function () {
             const walker = walk.walk('/tmp');
 
@@ -58,8 +61,33 @@
                 }
             );
         },
-        getEncoding = function (fullPath) {
+        getEncoding = (fullPath) => {
             return fullPath.split(" ").splice(-1)
+        },
+        collectionRestore = () => {
+/*
+            return new Promise((resolve, reject) => {
+                async.waterfall([
+                    (cb) => {
+                        rimraf(config.backup.to, cb);
+                    },
+                    (cb) => {
+                        Directory.copyDir(config.backup.from, config.backup.to, cb);
+                    }
+                ], (err) => {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+
+*/
+            return _.waterfall([
+                _.curry(rimraf, config.backup.to),
+                _.curry(Directory.copyDir, config.backup.from, config.backup.to)
+            ]);
         };
 
     const basePath = 'X:/VHE/vsc', ///home/harrold.korte', //
@@ -85,5 +113,17 @@ return;
     console.log(master.hasArtist('Safa.Ri'));
 */
 
+/*
+ todo 20171115:
+
+ 1) tags for converted
+  */
+/*
+    _.curry(console.log, _, 'test')('test2');
+    return;
+*/
+
+    collectionRestore().then(_.curry(console.log, 'done!'));
+    return;
     Collection.sync(master, slave, {batch: true});
 }());
