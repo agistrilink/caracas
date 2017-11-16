@@ -110,6 +110,7 @@ return;*/
     _.curry(console.log, _, 'test')('test2');
     return;
 */
+/*
 
     const sum = (x, y, cb) => {
             cb(undefined, x + y);
@@ -128,9 +129,10 @@ return;*/
             console.error('error: ' + err);
         });
 return;
-/*
+*/
+
     const test = new Test(3),
-        psum = _.promisy(test, 'sum');
+        psum = _.promisy(test, test.sum);
     psum(2)
         .then(result => {
             console.log(result);
@@ -144,7 +146,6 @@ return;
         });
 
     return;
-*/
 
 
     collectionRestore().then(_ => {

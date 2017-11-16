@@ -1,5 +1,5 @@
 
-const _ = require('lodash'),
+const lodash = require('lodash'),
     async = require('async');
 
 class MixinBuilder {
@@ -12,13 +12,7 @@ class MixinBuilder {
     }
 }
 
-class Miracle extends _ {
-    // chain promisses
-    static chain(){
-
-    }
-
-//    _ = require('lodash'),
+class _ extends lodash {
     static waterfall(list, done) {
         return new Promise((resolve, reject) => {
             async.waterfall(list, done || ((err, ...data) => {
@@ -63,19 +57,19 @@ class Miracle extends _ {
 
     static promisy(obj, f){
         if (!f){
-            return Miracle.curry(Miracle.asPromise, obj);
+            return _.curry(_.asPromise, obj);
         }
 
         if (typeof f === 'string'){
             f = obj[f];
         }
 
-        return Miracle.curry(Miracle.asPromise, Miracle.curry(f.call(obj)));
+        return _.curry(_.asPromise, _.bind(f, obj));
     }
 
     // http://macr.ae/article/es6-and-currying.html
     static curry(fn, ...args1) {
-        const i = args1.indexOf(Miracle),
+        const i = args1.indexOf(_),
             args3 = (i === -1) ? [] : args1.splice(i).slice(1);
 
         return (...args2) => fn(...args1, ...args2, ...args3);
@@ -88,4 +82,4 @@ class Miracle extends _ {
 
 }
 
-module.exports = Miracle;
+module.exports = _;
