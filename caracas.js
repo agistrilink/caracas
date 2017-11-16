@@ -1,5 +1,14 @@
 'use strict';
 
+class Test {
+    constructor(i){
+        this.i = i;
+    }
+    sum(j, cb){
+        cb(undefined, this.i + j);
+    }
+}
+
 (function () {
     const config = require('./app/config/config'),
         walk = require('walk'),
@@ -65,25 +74,6 @@
             return fullPath.split(" ").splice(-1)
         },
         collectionRestore = () => {
-/*
-            return new Promise((resolve, reject) => {
-                async.waterfall([
-                    (cb) => {
-                        rimraf(config.backup.to, cb);
-                    },
-                    (cb) => {
-                        Directory.copyDir(config.backup.from, config.backup.to, cb);
-                    }
-                ], (err) => {
-                    if(err) {
-                        reject(err);
-                    } else {
-                        resolve();
-                    }
-                });
-            });
-
-*/
             return _.waterfall([
                 _.curry(rimraf, config.backup.to),
                 _.curry(Directory.copyDir, config.backup.from, config.backup.to)
@@ -101,11 +91,9 @@
     console.log(master.getEncodings());
     return;
 */
-/*
-    storage.save('harrold', 50);
+/*    storage.save('harrold', 500);
     console.log(storage.load('harrold'));
-return;
-*/
+return;*/
 /*
     console.log('^' + album.encoding.type + '^');
     console.log('|' + album.basePath + '^');
@@ -123,7 +111,57 @@ return;
     return;
 */
 
-    collectionRestore().then(_.curry(console.log, 'done!'));
+    const sum = (x, y, cb) => {
+            cb(undefined, x + y);
+        },
+        psum = _.promisy(sum);
+
+    psum(1, 2)
+        .then(result => {
+            console.log(result);
+            return psum(100, result)
+        })
+        .then(result => {
+            console.log(result);
+        })
+        .catch(err => {
+            console.error('error: ' + err);
+        });
+return;
+/*
+    const test = new Test(3),
+        psum = _.promisy(test, 'sum');
+    psum(2)
+        .then(result => {
+            console.log(result);
+            return psum(result)
+        })
+        .then(result => {
+            console.log(result);
+        })
+        .catch(err => {
+            console.error('error: ' + err);
+        });
+
     return;
-    Collection.sync(master, slave, {batch: true});
+*/
+
+
+    collectionRestore().then(_ => {
+        Collection.sync(master, slave, {regex: /.+/})
+    });
+/*
+
+    collectionRestore
+        .then(_ => {
+            Collection.sync(master, slave, {regex: /.+/})
+        })
+        .then(_ => {
+            console.log('done');
+        })
+        .catch(err => {
+            console.error('error: ' + err);
+        });
+*/
+
 }());

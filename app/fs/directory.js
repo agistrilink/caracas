@@ -47,7 +47,6 @@ class Directory extends Node {
             .map(fullPath => {return path.basename(fullPath)});
     }
     
-    
     createDir(baseName){
         const fullPath = path.join(this.fullPath, baseName);
 
