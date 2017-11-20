@@ -1,6 +1,6 @@
 'use strict';
 
-const _ = require('lodash'),
+const _ = require('../mvc/miracle'),
     path = require('path'),
     Directory = require('../fs/directory'),
     {Encoding} = require('./encoding'),

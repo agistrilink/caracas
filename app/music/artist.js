@@ -1,6 +1,6 @@
 'use strict';
 
-const _ = require('lodash'),
+const _ = require('../mvc/miracle'),
     path = require('path'),
     Directory = require('../fs/directory'),
     async = require('async'),
@@ -31,9 +31,13 @@ class Artist extends Directory {
 
     newAlbum(title, encoding){
         console.log(title);
-        return new Album({
-            fullPath: this.createDir(title + ' ' + encoding.ext)
-        });
+        return new Promise((resolve, reject) => {
+            this.createDir(title + ' ' + encoding.ext)
+                .then(fullPath => {
+                    resolve(new Album({fullPath: fullPath}));
+                })
+                .catch(reject);
+        })
     }
 
     getAlbum(title, options){
@@ -52,34 +56,18 @@ class Artist extends Directory {
         const isFlacToMp3 = this.encoding.isMp3() && fromAlbum.encoding.isFlac();
 
         if (!isFlacToMp3){
-            return Directory.copyDir(fromAlbum.fullPath, this.fullPath, cb);
+            return Directory.copyDir(fromAlbum.fullPath, this.fullPath);
         }
 
-        const toAlbum = this.newAlbum(fromAlbum.title, KBS320);
-/*
-        fromAlbum.tracks.forEach(track => {
-            toAlbum.importTrack(track);
-        });
-*/
-
-        const q = async.queue((track, qcb) => {
-            toAlbum.importTrack(track, qcb);
-        }, 1);
-
-        q.drain = cb;
-
-        q.push(fromAlbum.tracks);
-    }
-
-    copyAlbum(album){
-        const isFlacToMp3 = this.encoding.isMp3() && album.encoding.isFlac();
-
-        if (isFlacToMp3){
-            Album.convertFlacToMp3(album, this.fullPath);
-        }
-        else {
-            console.log('deep copy of ' + album.fullPath + ' to ' + this.fullPath);
-        }
+        return this.newAlbum(fromAlbum.title, KBS320)
+            .then(toAlbum => {
+                return Promise.all(
+                    fromAlbum.tracks
+                        .forEach(track => {
+                            return toAlbum.importTrack(track);
+                        })
+                );
+            });
     }
 
     removeAlbum(name){
@@ -93,77 +81,57 @@ class Artist extends Directory {
     static sync(master, slave, cb){
         const isSlaveEncodingMp3 = slave.encoding.isMp3();
 
-        console.log(slave.fullPath);
-        // probably master album renamed
-        slave.getAlbumNames()
-            .filter(name => {
-                console.log(name);
-                const album = new Album(name);
-                console.log(album);
-                return !master.hasAlbum(album.title);
+        return Promise.all(
+                // probably master album renamed
+                slave.getAlbumNames()
+                    .filter(name => {
+                        console.log(name);
+                        const album = new Album(name);
+                        console.log(album);
+                        return !master.hasAlbum(album.title);
+                    })
+                    .forEach(name => {
+                        return slave.removeAlbum(name);
+                    })
+            )
+            .then(__ => {
+                return Promise.all(
+                    // encoding differences
+                    slave.getAlbumNames({force: true})
+                        .filter(name => {
+                            return !master.hasAlbum(name, {strict: true});
+                        })
+                        .forEach(name => {
+                            const masterAlbumEncoding = master.getAlbum(Album.asTitle(name)).encoding,
+                                slaveAlbum = slave.getAlbum(name, {strict: true}),
+                                slaveAlbumEncoding = slaveAlbum.encoding,
+                                compare = Encoding.compare(masterAlbumEncoding, slaveAlbumEncoding);
+
+                            // master album encoding lower or equal than slave's
+                            if (Encoding.compare(masterAlbumEncoding, slaveAlbumEncoding) <= 0){
+                                return _.newResolved();
+                            }
+
+                            // master album encoding bigger now
+
+                            if (slave.encoding.isAny() || slaveAlbumEncoding !== KBS320){
+                                return slave.removeAlbum(name);
+                            }
+                        })
+                );
             })
-            .forEach(name => {
-                slave.removeAlbum(name);
+            .then(__ => {
+                return Promise.all(
+                    master.getAlbumNames()
+                        .filter(title => {
+                            return !slave.hasAlbum(title);
+                        })
+                        .forEach((title) => {
+                            return slave.importAlbum(master.getAlbum(title));
+                        })
+                );
             });
-
-        // encoding differences // X:\VHE\vsc\Music\caracas\slave
-        slave.getAlbumNames({force: true})
-            .filter(name => {
-                return !master.hasAlbum(name, {strict: true});
-            })
-            .forEach(name => {
-                const masterAlbumEncoding = master.getAlbum(Album.asTitle(name)).encoding,
-                    slaveAlbum = slave.getAlbum(name, {strict: true}),
-                    slaveAlbumEncoding = slaveAlbum.encoding,
-                    compare = Encoding.compare(masterAlbumEncoding, slaveAlbumEncoding);
-
-                // master album encoding lower or equal than slave's
-                if (Encoding.compare(masterAlbumEncoding, slaveAlbumEncoding) <= 0){
-                    return;
-                }
-
-                // master album encoding bigger now
-
-                if (slave.encoding.isAny() || slaveAlbumEncoding !== KBS320){
-                    slave.removeAlbum(name);
-                }
-            });
-
-
-/*
-        master.getAlbumNames()
-            .filter(title => {
-                return !slave.hasAlbum(title);
-            })
-            .forEach(title => {
-                const album = master.getAlbum(title),
-                    isFlacToMp3 = isSlaveEncodingMp3 && album.encoding.isFlac();
-
-                if (!isFlacToMp3){
-                    // deep copy album to slave
-
-                    return;
-                }
-
-                slave.importAlbum(album);
-            });
-*/
-
-        const q = async.queue((title, qcb) => {
-            slave.importAlbum(master.getAlbum(title), qcb);
-        }, 1);
-
-        q.drain = cb;
-
-        q.push(
-            master.getAlbumNames()
-                .filter(title => {
-                    return !slave.hasAlbum(title);
-                })
-        );
-
     }
-
 };
 
 module.exports = Artist;

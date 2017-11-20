@@ -1,6 +1,6 @@
 'use strict';
 
-const _ = require('lodash'),
+const _ = require('../mvc/miracle'),
     fs = require('fs'),
     path = require('path'),
     File = require('./file'),
@@ -72,7 +72,9 @@ class Directory extends Node {
     }
 
     static copyDir(from, to , cb){
-        ncp(from, to, cb);
+        const _ncp = _.promisy(ncp);
+
+        return _ncp(from, to);
     }
 
     deleteDir(baseName){

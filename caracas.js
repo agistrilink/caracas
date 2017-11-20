@@ -74,13 +74,6 @@ class Test {
             return fullPath.split(" ").splice(-1)
         },
         collectionRestore = () => {
-/*
-            return _.waterfall([
-                _.curry(rimraf, config.backup.to),
-                _.curry(Directory.copyDir, config.backup.from, config.backup.to)
-            ]);
-
-*/
             const _rimraf = _.promisy(rimraf),
                 _copyDir = _.promisy(Directory.copyDir);
 

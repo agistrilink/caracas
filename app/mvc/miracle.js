@@ -67,6 +67,12 @@ class _ extends lodash {
         return _.curry(_.asPromise, _.bind(f, obj));
     }
 
+    static newResolved(...args){
+        return new Promise((resolve) => {
+            resolve(...args);
+        });
+    }
+
     // http://macr.ae/article/es6-and-currying.html
     static curry(fn, ...args1) {
         const i = args1.indexOf(_),
