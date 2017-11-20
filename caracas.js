@@ -74,10 +74,20 @@ class Test {
             return fullPath.split(" ").splice(-1)
         },
         collectionRestore = () => {
+/*
             return _.waterfall([
                 _.curry(rimraf, config.backup.to),
                 _.curry(Directory.copyDir, config.backup.from, config.backup.to)
             ]);
+
+*/
+            const _rimraf = _.promisy(rimraf),
+                _copyDir = _.promisy(Directory.copyDir);
+
+            return _rimraf(config.backup.to)
+                .then(() => {
+                    return _copyDir(config.backup.from, config.backup.to);
+                });
         };
 
     const basePath = 'X:/VHE/vsc', ///home/harrold.korte', //
@@ -130,6 +140,7 @@ return;*/
         });
 return;
 */
+/*
 
     const test = new Test(3),
         psum = _.promisy(test, test.sum);
@@ -146,23 +157,26 @@ return;
         });
 
     return;
+*/
 
 
+/*
     collectionRestore().then(_ => {
         Collection.sync(master, slave, {regex: /.+/})
     });
-/*
+*/
 
-    collectionRestore
+    collectionRestore()
+/*
         .then(_ => {
             Collection.sync(master, slave, {regex: /.+/})
         })
+*/
         .then(_ => {
             console.log('done');
         })
         .catch(err => {
             console.error('error: ' + err);
         });
-*/
 
 }());

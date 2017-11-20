@@ -37,53 +37,40 @@ class Collection extends Directory {
             regex: /.+/ // e.g. /^[A-D]/
         });
 
-        slave.getArtistNames()
-            .filter(name => {
-                return !master.hasArtist(name);
-            })
-            .forEach(name => {
-                slave.removeArtist(name);
-            });
-
-        master.getArtistNames()
-            .filter(name => {
-                return !slave.hasArtist(name);
-            })
-            .forEach(name => {
-                slave.addArtist(name);
-            });
-
-/*
-        master.getArtistNames()
-            .filter(name => {
-                return name.search(options.regex) >= 0;
-            })
-            .forEach(name => {
-                Artist.sync(
-                    master.getArtist(name),
-                    slave.getArtist(name)
-                );
-            });
-*/
-
-        const q = async.queue((name, qcb) => {
-            Artist.sync(
-                master.getArtist(name),
-                slave.getArtist(name),
-                qcb
-            );
-        }, 1);
-
-        q.drain = _ => {
-            console.log('ready!!');
-        };
-
-        q.push(
-            master.getArtistNames()
+        return Promise.all(
+            slave.getArtistNames()
                 .filter(name => {
-                    return name.search(options.regex) >= 0;
+                    return !master.hasArtist(name);
                 })
-        );
+                .forEach(name => {
+                    return slave.removeArtist(name);
+                })
+        )
+        .then(_ => {
+            return Promise.all(
+                master.getArtistNames()
+                    .filter(name => {
+                        return !slave.hasArtist(name);
+                    })
+                    .forEach(name => {
+                        return slave.addArtist(name);
+                    })
+            );
+        })
+        .then(_ => {
+            return Promise.all(
+                master.getArtistNames()
+                    .filter(name => {
+                        return name.search(options.regex) >= 0;
+                    })
+                    .forEach(name => {
+                        return Artist.sync(
+                            master.getArtist(name),
+                            slave.getArtist(name)
+                        );
+                    })
+            );
+        });
     }
 
     // helper function to identify and manually adjust albums in collection with wrong encoding label

@@ -48,14 +48,27 @@ class Directory extends Node {
     }
     
     createDir(baseName){
-        const fullPath = path.join(this.fullPath, baseName);
+        const fullPath = path.join(this.fullPath, baseName),
+            _fsStat = _.promisy(fs.stat),
+            _fsMkdir = _.promisy(fs.mkdir);
 
-        console.log('creating dir: ' + fullPath);
-        if (!fs.existsSync(fullPath)){
-            fs.mkdirSync(fullPath);
-        }
-
-        return fullPath;
+        return new Promise((resolve, reject) => {
+            _fsStat(fullPath)
+                .then(stats => {
+                    if (stats.isDirectory()){
+                        resolve(fullPath);
+                    } else {
+                        reject(fullPath + ' is not a directory');
+                    }
+                })
+                .catch(__ => {
+                    _fsMkdir(fullPath)
+                        .then(__ => {
+                            resolve(fullPath);
+                        })
+                        .catch(reject);
+                });
+        });
     }
 
     static copyDir(from, to , cb){
@@ -63,10 +76,10 @@ class Directory extends Node {
     }
 
     deleteDir(baseName){
-        const fullPath = path.join(this.fullPath, baseName);
-        rimraf(fullPath, function () {
-            console.log('deleted dir: ' + fullPath);
-        });
+        const _rimraf = _.promisy(rimraf),
+            fullPath = path.join(this.fullPath, baseName);
+
+        return _rimraf(fullPath);
     }
 
     static isA(fullPath) {
