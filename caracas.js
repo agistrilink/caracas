@@ -73,13 +73,12 @@ class Test {
         getEncoding = (fullPath) => {
             return fullPath.split(" ").splice(-1)
         },
-        collectionRestore = () => {
-            const _rimraf = _.promisy(rimraf),
-                _copyDir = _.promisy(Directory.copyDir);
+        collectionRestore = __ => {
+            const _rimraf = _.promisy(rimraf);
 
             return _rimraf(config.backup.to)
                 .then(() => {
-                    return _copyDir(config.backup.from, config.backup.to);
+                    return Directory.copyDir(config.backup.from, config.backup.to);
                 });
         };
 
@@ -160,11 +159,10 @@ return;
 */
 
     collectionRestore()
-/*
-        .then(_ => {
-            Collection.sync(master, slave, {regex: /.+/})
-        })
-*/
+/*        .then(_ => {
+            console.log('done...');
+            return Collection.sync(master, slave, {regex: /.+/});
+        })*/
         .then(_ => {
             console.log('done');
         })

@@ -36,13 +36,16 @@ class Collection extends Directory {
         options = _.defaults(options, {
             regex: /.+/ // e.g. /^[A-D]/
         });
-
+console.log('boe');
+console.log(slave.getArtistNames());
         return Promise.all(
             slave.getArtistNames()
                 .filter(name => {
+                    console.log('step 0');
                     return !master.hasArtist(name);
                 })
                 .forEach(name => {
+                    console.log('step 1');
                     return slave.removeArtist(name);
                 })
         )

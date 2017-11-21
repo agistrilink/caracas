@@ -5,8 +5,10 @@ const _ = require('../mvc/miracle'),
     path = require('path'),
     File = require('./file'),
     Node = require('../fs/node'),
-    ncp = require('ncp').ncp,
-    rimraf = require('rimraf');
+    _ncp = _.promisy(require('ncp').ncp),
+    _fsStat = _.promisy(fs.stat),
+    _fsMkdir = _.promisy(fs.mkdir),
+    _rimraf = _.promisy(require('rimraf'));
 
 class Directory extends Node {
     hasSubDir(baseName){
@@ -48,9 +50,7 @@ class Directory extends Node {
     }
     
     createDir(baseName){
-        const fullPath = path.join(this.fullPath, baseName),
-            _fsStat = _.promisy(fs.stat),
-            _fsMkdir = _.promisy(fs.mkdir);
+        const fullPath = path.join(this.fullPath, baseName);
 
         return new Promise((resolve, reject) => {
             _fsStat(fullPath)
@@ -71,15 +71,12 @@ class Directory extends Node {
         });
     }
 
-    static copyDir(from, to , cb){
-        const _ncp = _.promisy(ncp);
-
+    static copyDir(from, to){
         return _ncp(from, to);
     }
 
     deleteDir(baseName){
-        const _rimraf = _.promisy(rimraf),
-            fullPath = path.join(this.fullPath, baseName);
+        const fullPath = path.join(this.fullPath, baseName);
 
         return _rimraf(fullPath);
     }

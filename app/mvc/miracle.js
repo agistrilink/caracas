@@ -84,8 +84,6 @@ class _ extends lodash {
     static mix(superclass) {
         return new MixinBuilder(superclass);
     }
-
-
 }
 
 module.exports = _;
