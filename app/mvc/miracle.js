@@ -1,3 +1,4 @@
+"use strict";
 
 const lodash = require('lodash'),
     async = require('async');
@@ -85,5 +86,17 @@ class _ extends lodash {
         return new MixinBuilder(superclass);
     }
 }
+
+_.Promise = {
+    chain: (list, worker) => {
+        if (list.length === 0){
+            return _.newResolved();
+        }
+
+        const elt = list.shift();
+
+        return _.Promise.chain(list).then(_.curry(worker, elt));
+    }
+};
 
 module.exports = _;
