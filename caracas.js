@@ -159,10 +159,9 @@ return;
 */
 
     collectionRestore()
-/*        .then(_ => {
-            console.log('done...');
+        .then(_ => {
             return Collection.sync(master, slave, {regex: /.+/});
-        })*/
+        })
         .then(_ => {
             console.log('done');
         })

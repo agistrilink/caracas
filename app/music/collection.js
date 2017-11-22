@@ -1,6 +1,6 @@
 'use strict';
 
-const _ = require('lodash'),
+const _ = require('../mvc/miracle'),
     path = require('path'),
     async = require('async'),
     Artist = require('./artist'),
@@ -36,44 +36,44 @@ class Collection extends Directory {
         options = _.defaults(options, {
             regex: /.+/ // e.g. /^[A-D]/
         });
-console.log('boe');
-console.log(slave.getArtistNames());
+
+//        return Promise.all([_.newResolved(), _.newResolved(), _.newResolved()]);
+
         return Promise.all(
             slave.getArtistNames()
                 .filter(name => {
-                    console.log('step 0');
                     return !master.hasArtist(name);
                 })
-                .forEach(name => {
-                    console.log('step 1');
+                .map(name => {
                     return slave.removeArtist(name);
                 })
         )
-        .then(_ => {
+        .then(__ => {
             return Promise.all(
                 master.getArtistNames()
                     .filter(name => {
                         return !slave.hasArtist(name);
                     })
-                    .forEach(name => {
+                    .map(name => {
                         return slave.addArtist(name);
                     })
             );
         })
-        .then(_ => {
+        .then(__ => {
             return Promise.all(
                 master.getArtistNames()
                     .filter(name => {
                         return name.search(options.regex) >= 0;
                     })
-                    .forEach(name => {
+                    .map(name => {
                         return Artist.sync(
                             master.getArtist(name),
                             slave.getArtist(name)
                         );
                     })
             );
-        });
+        })
+            ;
     }
 
     // helper function to identify and manually adjust albums in collection with wrong encoding label

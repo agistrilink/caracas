@@ -56,14 +56,14 @@ class Artist extends Directory {
         const isFlacToMp3 = this.encoding.isMp3() && fromAlbum.encoding.isFlac();
 
         if (!isFlacToMp3){
-            return Directory.copyDir(fromAlbum.fullPath, this.fullPath);
+            return Directory.copyDir(fromAlbum.fullPath, this.fullPath + '/' + fromAlbum.baseName);
         }
 
         return this.newAlbum(fromAlbum.title, KBS320)
             .then(toAlbum => {
                 return Promise.all(
                     fromAlbum.tracks
-                        .forEach(track => {
+                        .map(track => {
                             return toAlbum.importTrack(track);
                         })
                 );
@@ -90,7 +90,7 @@ class Artist extends Directory {
                         console.log(album);
                         return !master.hasAlbum(album.title);
                     })
-                    .forEach(name => {
+                    .map(name => {
                         return slave.removeAlbum(name);
                     })
             )
@@ -101,7 +101,7 @@ class Artist extends Directory {
                         .filter(name => {
                             return !master.hasAlbum(name, {strict: true});
                         })
-                        .forEach(name => {
+                        .map(name => {
                             const masterAlbumEncoding = master.getAlbum(Album.asTitle(name)).encoding,
                                 slaveAlbum = slave.getAlbum(name, {strict: true}),
                                 slaveAlbumEncoding = slaveAlbum.encoding,
@@ -126,7 +126,7 @@ class Artist extends Directory {
                         .filter(title => {
                             return !slave.hasAlbum(title);
                         })
-                        .forEach((title) => {
+                        .map((title) => {
                             return slave.importAlbum(master.getAlbum(title));
                         })
                 );
