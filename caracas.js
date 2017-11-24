@@ -18,6 +18,7 @@ class Test {
         async = require('async'),
         Directory = require('./app/fs/directory'),
         Album = require('./app/music/album'),
+        Track = require('./app/music/track'),
         {Encoding, MP3, ANY} = require('./app/music/encoding'),
         Collection = require('./app/music/collection'),
         TaskRunner = require('./app/batch/taskRunner'),
@@ -160,9 +161,13 @@ return;
 
     collectionRestore()
         .then(_ => {
-            return Collection.sync(master, slave, {regex: /.+/});
+            const track1 = new Track({fullPath: '/home/harrold.korte/Music/caracas/master/Safa.Ri/Safa.Ri - (2014) String Quartet flac/15 Mathew Jonson - Cause Baby It Just Feels Right.flac'});
+            const track2 = new Track({fullPath: '/home/harrold.korte/Music/caracas/master/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs/04 Aashya - Deep Space Night Sofa Session.mp3'});
+            return track1.getTags();
+//            return Collection.sync(master, slave, {regex: /.+/});
         })
         .then(_ => {
+            console.log(_);
             console.log('done');
         })
         .catch(err => {

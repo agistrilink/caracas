@@ -40,7 +40,7 @@ class Album extends Directory {
 
     importTrack(track){
 //        console.log(this.baseName + ': importing track ' + track.title);
-        return Track.convertFlacToMp3(track, this.fullPath);
+        return Track.convertFlacToMp3(track, this);
     }
 
     static convertFlacToMp3(album, toFullPath){

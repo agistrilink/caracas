@@ -104,8 +104,7 @@ class Artist extends Directory {
                         .map(name => {
                             const masterAlbumEncoding = master.getAlbum(Album.asTitle(name)).encoding,
                                 slaveAlbum = slave.getAlbum(name, {strict: true}),
-                                slaveAlbumEncoding = slaveAlbum.encoding,
-                                compare = Encoding.compare(masterAlbumEncoding, slaveAlbumEncoding);
+                                slaveAlbumEncoding = slaveAlbum.encoding;
 
                             // master album encoding lower or equal than slave's
                             if (Encoding.compare(masterAlbumEncoding, slaveAlbumEncoding) <= 0){

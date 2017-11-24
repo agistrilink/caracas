@@ -56,16 +56,8 @@ class _ extends lodash {
         });
     }
 
-    static promisy(obj, f){
-        if (!f){
-            return _.curry(_.asPromise, obj);
-        }
-
-        if (typeof f === 'string'){
-            f = obj[f];
-        }
-
-        return _.curry(_.asPromise, _.bind(f, obj));
+    static promisy(f, obj){
+        return _.curry(_.asPromise, !!obj ? _.bind(f, obj) : f);
     }
 
     static newResolved(...args){
