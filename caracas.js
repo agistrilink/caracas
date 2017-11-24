@@ -16,6 +16,7 @@ class Test {
         f2m = require('flac-to-mp3'),
         rimraf = require('rimraf'),
         async = require('async'),
+        Node = require('./app/fs/node'),
         Directory = require('./app/fs/directory'),
         Album = require('./app/music/album'),
         Track = require('./app/music/track'),
@@ -160,14 +161,16 @@ return;
 */
 
     collectionRestore()
-        .then(_ => {
+        .then(__ => {
+/*
             const track1 = new Track({fullPath: '/home/harrold.korte/Music/caracas/master/Safa.Ri/Safa.Ri - (2014) String Quartet flac/15 Mathew Jonson - Cause Baby It Just Feels Right.flac'});
             const track2 = new Track({fullPath: '/home/harrold.korte/Music/caracas/master/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs/04 Aashya - Deep Space Night Sofa Session.mp3'});
-            return track1.getTags();
-//            return Collection.sync(master, slave, {regex: /.+/});
+            const album = new Node({fullPath: track1.basePath}).baseName;
+            return _.newResolved(album);
+*/
+            return Collection.sync(master, slave, {regex: /.+/});
         })
-        .then(_ => {
-            console.log(_);
+        .then(__ => {
             console.log('done');
         })
         .catch(err => {

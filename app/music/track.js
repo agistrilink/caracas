@@ -2,13 +2,14 @@
 
 const _ = require('../mvc/miracle'),
     path = require('path'),
+    Node = require('../fs/node'),
     Directory = require('../fs/directory'),
     File = require('../fs/file'),
     {Encoding, FLAC, MP3, KBS320} = require('./encoding'),
-    childProcess = require('child_process'),
+    childProcess = require('child_process')/*,
     mm = require('musicmetadata'),
-    _mmRead = _.promisy(nodeID3.read, nodeID3),
-    _nodeId3Update = _.promisy(nodeID3.update, nodeID3);
+    _nodeId3Read = _.promisy(nodeID3.read, nodeID3),
+    _nodeId3Update = _.promisy(nodeID3.update, nodeID3)*/;
 
 class Track extends File {
     constructor(obj, options) {
@@ -45,12 +46,14 @@ class Track extends File {
                 reject('cannot convert non-flac file: ' + fromFlacTrack.fullPath);
             }
 
-            const toMp3Track = new Track({fullPath: toDir.fullPath + '/' + fromFlacTrack.title + '.' + MP3.type}),
+            const fromAlbumTag = new Node({fullPath: fromFlacTrack.basePath}).baseName,
+                toMp3Track = new Track({fullPath: toDir.fullPath + '/' + fromFlacTrack.title + '.' + MP3.type}),
                 // https://ffmpeg.org/ffmpeg.html#Generic-options
                 ffmpeg = childProcess.spawn("ffmpeg", [
                     "-i", fromFlacTrack.fullPath,
                     "-ab", "320k",
                     "-map_metadata", "0",
+                    "-metadata", 'album="' + fromAlbumTag.substr(0, fromAlbumTag.lastIndexOf(' ')).trim() + ' ' + KBS320.ext + '"',
                     "-id3v2_version", "3",
 //                "-logLevel", "error", // default info level
                     "-y",
@@ -60,6 +63,8 @@ class Track extends File {
             ffmpeg.stdout.on('close', function (data) {
                 console.log('converted flac to ' + toMp3Track.fullPath);
 
+                resolve();
+                return;
                 fromFlacTrack.getTags()
                     .then(fromTags => {
                         console.log(fromTags);
