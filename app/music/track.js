@@ -47,13 +47,14 @@ class Track extends File {
             }
 
             const fromAlbumTag = new Node({fullPath: fromFlacTrack.basePath}).baseName,
+                toAlbumTag = fromAlbumTag.substr(0, fromAlbumTag.lastIndexOf(' ')).trim() + ' ' + KBS320.ext,
                 toMp3Track = new Track({fullPath: toDir.fullPath + '/' + fromFlacTrack.title + '.' + MP3.type}),
                 // https://ffmpeg.org/ffmpeg.html#Generic-options
                 ffmpeg = childProcess.spawn("ffmpeg", [
                     "-i", fromFlacTrack.fullPath,
                     "-ab", "320k",
                     "-map_metadata", "0",
-                    "-metadata", 'album="' + fromAlbumTag.substr(0, fromAlbumTag.lastIndexOf(' ')).trim() + ' ' + KBS320.ext + '"',
+                    "-metadata", 'album=' + toAlbumTag,
                     "-id3v2_version", "3",
 //                "-logLevel", "error", // default info level
                     "-y",
@@ -64,7 +65,10 @@ class Track extends File {
                 console.log('converted flac to ' + toMp3Track.fullPath);
 
                 resolve();
-                return;
+
+
+
+                /*                return;
                 fromFlacTrack.getTags()
                     .then(fromTags => {
                         console.log(fromTags);
@@ -75,7 +79,8 @@ class Track extends File {
                         });
                     })
                     .then(resolve)
-                    .catch(reject);
+                    .catch(reject);*/
+
             });
 
             // NOTE: ffmpeg outputs to standard error - Always has, always will no doubt
