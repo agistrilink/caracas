@@ -162,12 +162,6 @@ return;
 
     collectionRestore()
         .then(__ => {
-/*
-            const track1 = new Track({fullPath: '/home/harrold.korte/Music/caracas/master/Safa.Ri/Safa.Ri - (2014) String Quartet flac/15 Mathew Jonson - Cause Baby It Just Feels Right.flac'});
-            const track2 = new Track({fullPath: '/home/harrold.korte/Music/caracas/master/Safa.Ri/Safa.Ri - (2016) Trumpa Nine-Eleven 320kbs/04 Aashya - Deep Space Night Sofa Session.mp3'});
-            const album = new Node({fullPath: track1.basePath}).baseName;
-            return _.newResolved(album);
-*/
             return Collection.sync(master, slave, {regex: /.+/});
         })
         .then(__ => {
