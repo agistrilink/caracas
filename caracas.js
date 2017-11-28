@@ -17,6 +17,7 @@ class Test {
         rimraf = require('rimraf'),
         async = require('async'),
         Node = require('./app/fs/node'),
+        File = require('./app/fs/file'),
         Directory = require('./app/fs/directory'),
         Album = require('./app/music/album'),
         Track = require('./app/music/track'),
@@ -160,9 +161,14 @@ return;
     });
 */
 
+
     collectionRestore()
         .then(__ => {
-            return Collection.sync(master, slave, {regex: /.+/});
+            return File.copyFile(
+                'X:/VHE/Music/caracas/master/Safa.Ri/Safa.Ri - (2014) String Quartet flac/04 Aashya - Deep Space Night Sofa Session.mp3',
+                'X:/VHE/Music/caracas/master/Safa.Ri/Safa.Ri - (2014) String Quartet flac/04 Aashya - Deep Space Night Sofa Session2.mp3',
+            );
+//            return Collection.sync(master, slave, {regex: /.+/});
         })
         .then(__ => {
             console.log('done');

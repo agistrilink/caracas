@@ -16,12 +16,20 @@ class Encoding extends Base {
         return this.type === TYPE.ANY;
     }
 
+    isWav() {
+        return this.type === TYPE.WAV;
+    }
+
     isFlac() {
         return this.type === TYPE.FLAC;
     }
 
     isMp3() {
         return this.type === TYPE.MP3;
+    }
+
+    isLossless() {
+        return this.isFlac() || this.isWav();
     }
 
     static compare(a, b) {

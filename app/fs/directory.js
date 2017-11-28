@@ -72,7 +72,7 @@ class Directory extends Node {
     }
 
     static copyDir(from, to){
-        return _ncp(from, to);
+        return _ncp(from, to, {limit: 1});
     }
 
     deleteDir(baseName){

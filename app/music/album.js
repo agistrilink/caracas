@@ -2,6 +2,7 @@
 
 const _ = require('../mvc/miracle'),
     path = require('path'),
+    File = require('../fs/file'),
     Directory = require('../fs/directory'),
     {Encoding} = require('./encoding'),
     Track = require('./track');
@@ -40,7 +41,10 @@ class Album extends Directory {
 
     importTrack(track){
 //        console.log(this.baseName + ': importing track ' + track.title);
-        return Track.convertFlacToMp3(track, this);
+//        if (track.encoding.isLossless()) {
+            return Track.convertLosslessToMp3(track, this);
+//        }
+
     }
 
     static convertFlacToMp3(album, toFullPath){

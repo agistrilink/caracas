@@ -53,9 +53,9 @@ class Artist extends Directory {
     }
 
     importAlbum(fromAlbum, cb){
-        const isFlacToMp3 = this.encoding.isMp3() && fromAlbum.encoding.isFlac();
+        const isLosslessToMp3 = this.encoding.isMp3() && fromAlbum.encoding.isLossless();
 
-        if (!isFlacToMp3){
+        if (!isLosslessToMp3){
             return Directory.copyDir(fromAlbum.fullPath, this.fullPath + '/' + fromAlbum.baseName);
         }
 

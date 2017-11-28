@@ -14,14 +14,9 @@ const _ = require('../mvc/miracle'),
 class Track extends File {
     constructor(obj, options) {
         super(obj, options);
-    }
 
-    get encoding() {
-        return Encoding.getFromKey(path.extname(this.fullPath).slice(1));
-    }
-
-    get title() {
-        return path.basename(this.fullPath, '.' + this.encoding.type);
+        this.encoding = Encoding.getFromKey(path.extname(this.fullPath).slice(1));
+        this.title = path.basename(this.fullPath, '.' + this.encoding.type);
     }
 
     getTags() {
@@ -40,18 +35,18 @@ class Track extends File {
         return _nodeId3Update(tags, this.fullPath);
     }
 
-    static convertFlacToMp3(fromFlacTrack, toDir) {
+    static convertLosslessToMp3(fromTrack, toDir) {
         return new Promise((resolve, reject) => {
-            if (!fromFlacTrack.encoding.isFlac()) {
-                reject('cannot convert non-flac file: ' + fromFlacTrack.fullPath);
+            if (!fromTrack.encoding.isLossless()) {
+                reject('Track not lossless; cannot convert: ' + fromTrack.fullPath);
             }
 
-            const fromAlbumTag = new Node({fullPath: fromFlacTrack.basePath}).baseName,
+            const fromAlbumTag = new Node({fullPath: fromTrack.basePath}).baseName,
                 toAlbumTag = fromAlbumTag.substr(0, fromAlbumTag.lastIndexOf(' ')).trim() + ' ' + KBS320.ext,
-                toMp3Track = new Track({fullPath: toDir.fullPath + '/' + fromFlacTrack.title + '.' + MP3.type}),
+                toMp3Track = new Track({fullPath: toDir.fullPath + '/' + fromTrack.title + '.' + MP3.type}),
                 // https://ffmpeg.org/ffmpeg.html#Generic-options
                 ffmpeg = childProcess.spawn("ffmpeg", [
-                    "-i", fromFlacTrack.fullPath,
+                    "-i", fromTrack.fullPath,
                     "-ab", "320k",
                     "-map_metadata", "0",
                     "-metadata", 'album=' + toAlbumTag,
