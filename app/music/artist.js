@@ -2,10 +2,15 @@
 
 const _ = require('../mvc/miracle'),
     path = require('path'),
+    config = require('../config/config'),
     Directory = require('../fs/directory'),
     async = require('async'),
     {Encoding, KBS320, ANY} = require('./encoding'),
-    Album = require('./album');
+    Album = require('./album'),
+    isSkipAlbum = name => {
+        return config.sync && config.sync.skip && config.sync.skip.album &&
+            config.sync.skip.album.indexOf(name) >= 0;
+    };
 
 class Artist extends Directory {
 
@@ -75,7 +80,14 @@ class Artist extends Directory {
     }
 
     getAlbumNames(options) {
-        return this.getSubDirectoriesBaseNames(options);
+        options = _.defaults(options, {
+            isFilterSkipAlbum: true
+        });
+
+        const names = this.getSubDirectoriesBaseNames(options);
+        return options.isFilterSkipAlbum
+            ? names.filter(_.not(isSkipAlbum))
+            : names;
     }
 
     static sync(master, slave, cb){

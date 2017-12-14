@@ -162,13 +162,11 @@ return;
 */
 
 
-    collectionRestore()
+//    collectionRestore()
+/*
+    _.newResolved()
         .then(__ => {
-            return File.copyFile(
-                'X:/VHE/Music/caracas/master/Safa.Ri/Safa.Ri - (2014) String Quartet flac/04 Aashya - Deep Space Night Sofa Session.mp3',
-                'X:/VHE/Music/caracas/master/Safa.Ri/Safa.Ri - (2014) String Quartet flac/04 Aashya - Deep Space Night Sofa Session2.mp3',
-            );
-//            return Collection.sync(master, slave, {regex: /.+/});
+            return Collection.sync(master, slave, {regex: /^[A-B].+/});
         })
         .then(__ => {
             console.log('done');
@@ -176,5 +174,15 @@ return;
         .catch(err => {
             console.error('error: ' + err);
         });
-
+*/
+    _.Promise.chain([1, 2, 3, 4, 5], i => {
+        return new Promise(resolve => {
+            setTimeout(__ => {
+                console.log(i);
+                resolve(-i);
+            }, 2000);
+        });
+    }).then(values => {
+        console.log(values);
+    });
 }());

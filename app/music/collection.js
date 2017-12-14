@@ -3,9 +3,14 @@
 const _ = require('../mvc/miracle'),
     path = require('path'),
     async = require('async'),
+    config = require('../config/config'),
     Artist = require('./artist'),
     Directory = require('../fs/directory'),
-    {Encoding, ANY} = require('./encoding');
+    {Encoding, ANY} = require('./encoding'),
+    isSkipArtist = name => {
+        return config.sync && config.sync.skip && config.sync.skip.artist &&
+            config.sync.skip.artist.indexOf(name) >= 0;
+    };
 
 class Collection extends Directory {
     constructor(obj, options){
@@ -28,8 +33,15 @@ class Collection extends Directory {
         return this.deleteDir(name);
     }
 
-    getArtistNames() {
-        return this.getSubDirectoriesBaseNames();
+    getArtistNames(options) {
+        options = _.defaults(options, {
+            isFilterSkipArtist: true
+        });
+
+        const names = this.getSubDirectoriesBaseNames();
+        return options.isFilterSkipArtist
+            ? names.filter(_.not(isSkipArtist))
+            : names;
     }
 
     static sync(master, slave, options){

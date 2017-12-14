@@ -6,7 +6,11 @@ const _ = require('../mvc/miracle'),
     Directory = require('../fs/directory'),
     File = require('../fs/file'),
     {Encoding, FLAC, MP3, KBS320} = require('./encoding'),
-    childProcess = require('child_process')/*,
+    childProcess = require('child_process'),
+    nodeID3 = require('node-id3'),
+    _nodeId3Update = _.promisy(nodeID3.update, nodeID3)
+
+    /*,
     mm = require('musicmetadata'),
     _nodeId3Read = _.promisy(nodeID3.read, nodeID3),
     _nodeId3Update = _.promisy(nodeID3.update, nodeID3)*/;
@@ -35,17 +39,27 @@ class Track extends File {
         return _nodeId3Update(tags, this.fullPath);
     }
 
-    static convertLosslessToMp3(fromTrack, toDir) {
+    static convertLosslessToMp3(fromTrack, toDir, options) {
+        // skip or reject any directory, jpeg file, m3u etc.
+        options = _.defaults(options, {
+            isRejectOnNonTrackFiles: false
+        });
+
         return new Promise((resolve, reject) => {
-            if (!fromTrack.encoding.isLossless()) {
-                reject('Track not lossless; cannot convert: ' + fromTrack.fullPath);
+            if (!fromTrack.encoding.isLossless() && !fromTrack.encoding.isMp3()) {
+                options.isRejectOnNonTrackFiles
+                    ? reject('cannot convert non-track file: ' + fromTrack.fullPath)
+                    : resolve();
             }
 
             const fromAlbumTag = new Node({fullPath: fromTrack.basePath}).baseName,
                 toAlbumTag = fromAlbumTag.substr(0, fromAlbumTag.lastIndexOf(' ')).trim() + ' ' + KBS320.ext,
-                toMp3Track = new Track({fullPath: toDir.fullPath + '/' + fromTrack.title + '.' + MP3.type}),
-                // https://ffmpeg.org/ffmpeg.html#Generic-options
-                ffmpeg = childProcess.spawn("ffmpeg", [
+                toTrackFullPath = toDir.fullPath + '/' + fromTrack.title + '.' + MP3.type;
+
+            if (fromTrack.encoding.isLossless()){
+                const toMp3Track = new Track({fullPath: toTrackFullPath}),
+                    // https://ffmpeg.org/ffmpeg.html#Generic-options
+                    ffmpeg = childProcess.spawn("ffmpeg", [
                     "-i", fromTrack.fullPath,
                     "-ab", "320k",
                     "-map_metadata", "0",
@@ -56,39 +70,28 @@ class Track extends File {
                     toMp3Track.fullPath
                 ]);
 
-            ffmpeg.stdout.on('close', function (data) {
-                console.log('converted flac to ' + toMp3Track.fullPath);
+                ffmpeg.stdout.on('close', function (data) {
+                    console.log('converted flac to ' + toMp3Track.fullPath);
 
-                resolve();
+                    resolve();
+                });
 
+                // no reject case...
 
+                return;
+            }
 
-                /*                return;
-                fromFlacTrack.getTags()
-                    .then(fromTags => {
-                        console.log(fromTags);
-                        const fromAlbumTag = fromTags.album;
-
-                        return toMp3Track.updateTags({
-                            album: fromAlbumTag.substr(0, fromAlbumTag.lastIndexOf(' ')).trim() + ' ' + KBS320.ext
-                        });
-                    })
+            if (fromTrack.encoding.isMp3()){
+                File.copyFile(fromTrack.fullPath, toTrackFullPath)
+                    .then(_.curry(_nodeId3Update, {album: toAlbumTag}, toTrackFullPath))
                     .then(resolve)
-                    .catch(reject);*/
-
-            });
-
-            // NOTE: ffmpeg outputs to standard error - Always has, always will no doubt
-/*
-            ffmpeg.stderr.on('data', function (data) {
-                console.log(data);
-            });
-*/
+                    .catch(reject);
+            }
         });
     };
 
     static isA(fullPath) {
-        return !!new Track({fullPath: fullPath}).encoding;
+        return !!Encoding.getFromKey(path.extname(fullPath).slice(1), {doThrow: false});
     }
 };
 

@@ -77,10 +77,16 @@ class _ extends lodash {
     static mix(superclass) {
         return new MixinBuilder(superclass);
     }
+
+    static not(f){
+        return (...args) => {
+            return !f(...args);
+        }
+    }
 }
 
 _.Promise = {
-    chain: (list, worker) => {
+    chain_: (list, worker) => {
         if (list.length === 0){
             return _.newResolved();
         }
@@ -88,7 +94,46 @@ _.Promise = {
         const elt = list.shift();
 
         return _.Promise.chain(list).then(_.curry(worker, elt));
-    }
-};
+    },
+    chain__: (list, worker, initial) => {
+        if (list.length === 0){
+            return _.newResolved(initial);
+        }
+
+        const elt = list.pop();
+
+        return _.Promise.chain(list, worker, initial).then(_.curry(worker, elt));
+    },
+    chain: (list, worker, initial) => {
+        if (list.length === 0){
+            return _.newResolved([]);
+        }
+
+        const elt = list.pop();
+
+/*
+        return new Promise((resolve, reject) => {
+            _.Promise.chain(list, worker)
+                .then(values => {
+                    worker(elt).then(value => {
+                        values.push(value);
+                        resolve(values);
+                    });
+                });
+        });
+*/
+
+        return _.Promise.chain(list, worker).then(values => {
+            return new Promise((resolve, reject) => {
+                worker(elt).then(value => {
+                    values.push(value);
+                    resolve(values);
+                });
+            });
+        });
+    },
+    all: (list, worker, initial) => {
+        return Promise.all(list.map(worker));
+    }};
 
 module.exports = _;
