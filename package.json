@@ -4,7 +4,8 @@
   "homepage": "",
   "private": true,
   "scripts": {
-    "caracas": "node caracas.js"
+    "caracas": "node caracas.js",
+    "test": "jasmine --config=jasmine.json"
   },
   "dependencies": {
     "walk": "^2.3.9",

@@ -158,4 +158,5 @@ _.Promise = {
     }};
 
 _.Promise.each = _.Promise.chain;
+
 module.exports = _;

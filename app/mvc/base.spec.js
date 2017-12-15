@@ -1,9 +1,12 @@
 "use strict";
 
-const _ = require('./kraftaverk');
+const Base = require('./base');
 
-describe("Kraftaverk suite", function() {
-    it("contains spec with an expectation", function() {
-        expect(true).toBe(true);
+describe("Base suite", function() {
+    it("constrcutor object field will be part of the created object", function() {
+        let obj = new Base({field: 1});
+
+        expect(obj.hasOwnProperty('field')).toBe(true);
+        expect(obj.field).toBe(1);
     });
 });

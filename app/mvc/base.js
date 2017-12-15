@@ -1,5 +1,5 @@
 class Base {
-    constructor(obj, options) {
+    constructor(obj) {
         Object.assign(this, obj);
     }
 
