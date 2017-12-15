@@ -19,8 +19,10 @@
     "node-persist": "^2.1.0",
     "musicmetadata": "^2.0.5"
   },
-  "___devDependencies": {
+  "devDependencies": {
     "karma": "^1.7.1",
-    "jasmine-node-karma": "^1.6.1"
+    "karma-cli": "^1.0.1",
+    "karma-jasmine": "^1.1.1",
+    "jasmine-core": "^2.8.0"
   }
 }

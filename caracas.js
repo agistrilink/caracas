@@ -26,7 +26,7 @@ class Test {
         TaskRunner = require('./app/batch/taskRunner'),
         PersistenceSync = require('./app/mvc/persistenceSync'),
         storage = new PersistenceSync(),
-        _ = require('./app/mvc/miracle'),
+        _ = require('./app/mvc/kraftaverk'),
         traverse = function () {
             const walker = walk.walk('/tmp');
 
@@ -175,14 +175,29 @@ return;
             console.error('error: ' + err);
         });
 */
-    _.Promise.chain([1, 2, 3, 4, 5], i => {
-        return new Promise(resolve => {
-            setTimeout(__ => {
-                console.log(i);
-                resolve(-i);
-            }, 2000);
-        });
-    }).then(values => {
+    _.Promise.each([1, 2, 3, 4, 5], i => {
+        console.log(i);
+        return _.newResolved(-i);
+    }, {delay: 1000})
+    .then(values => {
         console.log(values);
+
+        return _.Promise.each([1, 2, 3, 4, 5], {
+            reduce: (memo, i) => memo*i,
+            initial: 1,
+            delay: 1000
+        });
+    })
+    .then(res => {
+        console.log(res);
     });
+
+
+/*
+    _.Promise.reduce([1, 2, 3, 4, 5], (memo, i) => {
+        return _.newResolved(memo*i);
+    }, 1).then(res => {
+        console.log(res);
+    });
+*/
 }());

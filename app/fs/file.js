@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs'),
-    _ = require('../mvc/miracle'),
+    _ = require('../mvc/kraftaverk'),
     Node = require('../fs/node'),
     _fsCopyFile = _.promisy(fs.copyFile);
 

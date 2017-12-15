@@ -1,6 +1,6 @@
 'use strict';
 
-const _ = require('../mvc/miracle'),
+const _ = require('../mvc/kraftaverk'),
     fs = require('fs'),
     path = require('path'),
     File = require('./file'),

@@ -104,36 +104,58 @@ _.Promise = {
 
         return _.Promise.chain(list, worker, initial).then(_.curry(worker, elt));
     },
-    chain: (list, worker, initial) => {
+    // LOADS of usage options in this chain
+    chain: (list, options, worker) => {
+        // (list, worker, options) call
+        if (typeof options === 'function'){
+            [options, worker] = [worker || {}, options];
+            options.worker = worker;
+        }
+
+        // default chain just constructs an array with no delay and no processing on items
+        options = _.defaults(options, {
+            worker: elt => _.newResolved(elt),
+            delay: undefined,
+            reduce: (values, value) => {
+                values.push(value);
+                return values;
+            },
+            initial: []
+        });
+
         if (list.length === 0){
-            return _.newResolved([]);
+            return _.newResolved(options.initial);
         }
 
         const elt = list.pop();
 
-/*
-        return new Promise((resolve, reject) => {
-            _.Promise.chain(list, worker)
-                .then(values => {
-                    worker(elt).then(value => {
-                        values.push(value);
-                        resolve(values);
-                    });
-                });
-        });
-*/
-
-        return _.Promise.chain(list, worker).then(values => {
+        return _.Promise.chain(list, options).then(values => {
             return new Promise((resolve, reject) => {
-                worker(elt).then(value => {
-                    values.push(value);
-                    resolve(values);
+                options.worker(elt).then(value => {
+                    values = options.reduce(values, value);
+
+                    if (isNaN(options.delay)){
+                        return resolve(values);
+                    }
+
+                    setTimeout(_.curry(resolve, values), +options.delay);
                 });
             });
         });
     },
-    all: (list, worker, initial) => {
+    reduce: (list, worker, memo) => {
+        if (list.length === 0){
+            return _.newResolved(memo);
+        }
+
+        const elt = list.pop();
+
+        return _.Promise.reduce(list, worker, memo)
+            .then(_.curry(worker, _, elt));
+    },
+    all: (list, worker) => {
         return Promise.all(list.map(worker));
     }};
 
+_.Promise.each = _.Promise.chain;
 module.exports = _;
