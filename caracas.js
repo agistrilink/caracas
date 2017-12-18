@@ -192,6 +192,9 @@ return;
         console.log(res);
     });
 
+    _.Promise.each([]).then(__ => {
+        console.log('boe2');
+    });
 
 /*
     _.Promise.reduce([1, 2, 3, 4, 5], (memo, i) => {

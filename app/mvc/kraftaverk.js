@@ -86,24 +86,13 @@ class _ extends lodash {
 }
 
 _.Promise = {
-    chain_: (list, worker) => {
-        if (list.length === 0){
-            return _.newResolved();
-        }
-
-        const elt = list.shift();
-
-        return _.Promise.chain(list).then(_.curry(worker, elt));
+    // https://stackoverflow.com/questions/30564053/how-can-i-synchronously-determine-a-javascript-promises-state
+    state: p => {
+        const t = {};
+        return Promise.race([p, t])
+            .then(v => (v === t)? "pending" : "fulfilled", () => "rejected");
     },
-    chain__: (list, worker, initial) => {
-        if (list.length === 0){
-            return _.newResolved(initial);
-        }
-
-        const elt = list.pop();
-
-        return _.Promise.chain(list, worker, initial).then(_.curry(worker, elt));
-    },
+    newResolved: _.newResolved,
     // LOADS of usage options in this chain
     chain: (list, options, worker) => {
         // (list, worker, options) call
@@ -123,25 +112,29 @@ _.Promise = {
             initial: []
         });
 
-        if (list.length === 0){
-            return _.newResolved(options.initial);
-        }
+        const chain = (list, options) => {
+            if (list.length === 0){
+                return _.newResolved(options.initial);
+            }
 
-        const elt = list.pop();
+            const elt = list.pop();
 
-        return _.Promise.chain(list, options).then(values => {
-            return new Promise((resolve, reject) => {
-                options.worker(elt).then(value => {
-                    values = options.reduce(values, value);
+            return chain(list, options).then(values => {
+                return new Promise((resolve, reject) => {
+                    options.worker(elt).then(value => {
+                        values = options.reduce(values, value);
 
-                    if (isNaN(options.delay)){
-                        return resolve(values);
-                    }
+                        if (isNaN(options.delay)){
+                            return resolve(values);
+                        }
 
-                    setTimeout(_.curry(resolve, values), +options.delay);
+                        setTimeout(_.curry(resolve, values), +options.delay);
+                    });
                 });
             });
-        });
+        };
+
+        return chain(list, options);
     },
     reduce: (list, worker, memo) => {
         if (list.length === 0){
