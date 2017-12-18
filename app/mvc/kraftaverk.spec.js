@@ -20,11 +20,19 @@ describe("Test suite", function() {
 
 describe("Kraftaverk suite: newResolved", function() {
     const promise = _.Promise.newResolved('test');
+/*    const promise = new Promise((resolve, reject) => {
+        setTimeout(_ => {
+            resolve('test');
+        }, 1000);
+    });*/
 
     it('should already been resolved', (done) => {
         _.Promise.state(promise).then(state => {
             expect(state).toBe('fulfilled');
-            done();
+            promise.then(data => {
+                expect(data).toBe('test');
+                done();
+            })
         });
     });
 });
