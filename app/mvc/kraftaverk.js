@@ -150,6 +150,14 @@ _.Promise = {
             .then(_.curry(worker, _, elt));
     },
 
+    filter: worker => {
+        return list => Promise.resolve(list.filter(worker));
+    },
+
+    map: worker => {
+        return list => Promise.resolve(list.map(worker));
+    },
+
     all: (list, worker) => {
         return Promise.all(list.map(worker));
     }

@@ -8,6 +8,7 @@ const _ = require('../mvc/kraftaverk'),
     _ncp = _.promisy(require('ncp').ncp),
     _fsStat = _.promisy(fs.stat),
     _fsMkdir = _.promisy(fs.mkdir),
+    _fsReaddir = _.promisy(fs.readdir),
     _rimraf = _.promisy(require('rimraf'));
 
 class Directory extends Node {
@@ -22,12 +23,15 @@ class Directory extends Node {
         });
 
         if (this.subDirectories && !options.force){
-            return this.subDirectories;
+            return Promise.resolve(this.subDirectories);
         }
 
-        return this.subDirectories = fs.readdirSync(this.fullPath)
-            .map(baseName => path.join(this.fullPath, baseName))
-            .filter(Directory.isA);
+        return this.subDirectories = fs.readdir(this.fullPath)
+            .then(list => Promise.resolve(
+                this.subDirectories = list
+                    .map(baseName => this.fullPath + '/' + baseName)
+                    .filter(Directory.isA)
+            ));
     }
 
     getFiles(options){
