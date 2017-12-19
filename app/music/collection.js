@@ -49,43 +49,19 @@ class Collection extends Directory {
             regex: /.+/ // e.g. /^[A-D]/
         });
 
-//        return Promise.all([_.newResolved(), _.newResolved(), _.newResolved()]);
-
-        return Promise.all(
-            slave.getArtistNames()
-                .filter(name => {
-                    return !master.hasArtist(name);
-                })
-                .map(name => {
-                    return slave.removeArtist(name);
-                })
+        return _.Promise.each(
+            slave.getArtistNames().filter(name => !master.hasArtist(name)),
+            name => slave.removeArtist(name)
         )
-        .then(__ => {
-            return Promise.all(
-                master.getArtistNames()
-                    .filter(name => {
-                        return !slave.hasArtist(name);
-                    })
-                    .map(name => {
-                        return slave.addArtist(name);
-                    })
-            );
-        })
-        .then(__ => {
-            return Promise.all(
-                master.getArtistNames()
-                    .filter(name => {
-                        return name.search(options.regex) >= 0;
-                    })
-                    .map(name => {
-                        return Artist.sync(
-                            master.getArtist(name),
-                            slave.getArtist(name)
-                        );
-                    })
-            );
-        })
-            ;
+        .then(__ => _.Promise.each(
+            master.getArtistNames().filter(name => !slave.hasArtist(name)),
+            name => slave.addArtist(name)
+        ))
+        .then(__ => _.Promise.each(
+            master.getArtistNames().filter(name => name.search(options.regex) >= 0),
+            name => Artist.sync(master.getArtist(name), slave.getArtist(name))
+        ))
+        ;
     }
 
     // helper function to identify and manually adjust albums in collection with wrong encoding label
@@ -104,7 +80,7 @@ class Collection extends Directory {
                     encodings.push(encoding);
                 }
             });
-        })
+        });
 
         return encodings;
     }

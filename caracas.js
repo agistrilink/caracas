@@ -160,21 +160,7 @@ return;
         Collection.sync(master, slave, {regex: /.+/})
     });
 */
-
-
-//    collectionRestore()
 /*
-    _.newResolved()
-        .then(__ => {
-            return Collection.sync(master, slave, {regex: /^[A-B].+/});
-        })
-        .then(__ => {
-            console.log('done');
-        })
-        .catch(err => {
-            console.error('error: ' + err);
-        });
-*/
     _.Promise.each([1, 2, 3, 4, 5], i => {
         console.log(i);
         return _.newResolved(-i);
@@ -195,7 +181,7 @@ return;
     _.Promise.each([]).then(__ => {
         console.log('boe2');
     });
-
+*/
 /*
     _.Promise.reduce([1, 2, 3, 4, 5], (memo, i) => {
         return _.newResolved(memo*i);
@@ -203,4 +189,15 @@ return;
         console.log(res);
     });
 */
+/*
+    const sdCard = new Directory({fullPath: config.master.fullPath});
+    console.log(sdCard.getSubDirectories());
+*/
+
+    collectionRestore()
+        .then(__ => Collection.sync(master, slave/*, {regex: /^[A-B].+/}*/))
+        .then(__ => console.log('done'))
+        .catch(err => console.error('error: ' + err))
+    ;
+
 }());

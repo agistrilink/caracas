@@ -90,9 +90,11 @@ _.Promise = {
     state: p => {
         const t = {};
         return Promise.race([p, t])
-            .then(v => (v === t)? "pending" : "fulfilled", () => "rejected");
+            .then(v => (v === t)? 'pending' : 'fulfilled', () => 'rejected');
     },
+
     newResolved: _.newResolved,
+
     // LOADS of usage options in this chain
     chain: (list, options, worker) => {
         // (list, worker, options) call
@@ -136,6 +138,7 @@ _.Promise = {
 
         return chain(list, options);
     },
+
     reduce: (list, worker, memo) => {
         if (list.length === 0){
             return _.newResolved(memo);
@@ -146,9 +149,11 @@ _.Promise = {
         return _.Promise.reduce(list, worker, memo)
             .then(_.curry(worker, _, elt));
     },
+
     all: (list, worker) => {
         return Promise.all(list.map(worker));
-    }};
+    }
+};
 
 _.Promise.each = _.Promise.chain;
 
