@@ -7,10 +7,11 @@ module.exports = deepAssign(common, {
         to: '/home/harrold.korte/Music/caracas'
     },
     master: {
-//        fullPath: '/run/user/1001/gvfs/mtp:host=%5Busb%3A002%2C016%5D/sdcard1/Music',
+//        fullPath: '/run/user/1001/gvfs/mtp:host=%5Busb%3A002%2C024%5D/sdcard1/Music',
         fullPath: '/home/harrold.korte/Music/caracas/master'
     },
     slave: {
+//        fullPath: '/media/harrold.korte/Medillin/Music',
         fullPath: '/home/harrold.korte/Music/caracas/slave'
     },
     storage: {

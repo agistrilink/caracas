@@ -86,7 +86,7 @@ class Directory extends Node {
     }
 
     static isA(fullPath) {
-        return fs.lstatSync(fullPath).isDirectory();
+        return fs.lstat(fullPath).isDirectory();
     }
 
     // FFS
