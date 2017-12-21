@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('../mvc/kraftaverk'),
-    fs = require('fs'),
+    fs = require('./promisy'),
     path = require('path'),
     Base = require('../mvc/base')/*,
     mix =require('../mvc/mix'),
@@ -26,10 +26,14 @@ class Node extends Base { // FFS: mix(Job).with(PersistenceSyncMixin) {
     }
 
     isDirectory() {
-        // do this here for testing (otherwise fs.lstat cannot be mocked)
-        const _fsLstat = _.promisy(fs.lstat, fs);
+        return fs.lstat(this.fullPath)
+            .then(stats => Promise.resolve(stats.isDirectory()));
+    }
 
-        return _fsLstat(this.fullPath).then(stats => Promise.resolve(stats.isDirectory()));
+    isFile() {
+        return new Promise((resolve, reject) => fs.lstat(
+            this.fullPath, (err, stats) => err ? reject(err) : resolve(stats.isFile()))
+        )
     }
 }
 

@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('../mvc/kraftaverk'),
-    fs = require('fs'),
+    fs = require('./promisy'),
     path = require('path'),
     File = require('./file'),
     Node = require('../fs/node'),
@@ -19,19 +19,26 @@ class Directory extends Node {
     // https://stackoverflow.com/questions/18112204/get-all-directories-within-directory-nodejs
     getSubDirectories(options){
         options = _.defaults(options, {
-            force: false
+            force: false,
+            wrap: false
         });
 
         if (this.subDirectories && !options.force){
             return Promise.resolve(this.subDirectories);
         }
 
-        return this.subDirectories = fs.readdir(this.fullPath)
-            .then(list => Promise.resolve(
-                this.subDirectories = list
-                    .map(baseName => this.fullPath + '/' + baseName)
-                    .filter(Directory.isA)
-            ));
+        return fs.readdir(this.fullPath).then(list => {
+            return _.Promise.chain(list, {
+                worker: baseName => new Node({fullPath: this.fullPath + '/' + baseName}).isDirectory(),
+                reduce: (subDirectories, isDirectory, baseName) => {
+                    if (isDirectory) {
+                        subDirectories.push(this.fullPath + '/' + baseName);
+                    }
+
+                    return subDirectories;
+                }
+            });
+        });
     }
 
     getFiles(options){
@@ -86,7 +93,7 @@ class Directory extends Node {
     }
 
     static isA(fullPath) {
-        return fs.lstat(fullPath).isDirectory();
+        return fs.lstatSync(fullPath).isDirectory();
     }
 
     // FFS

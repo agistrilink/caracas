@@ -124,7 +124,7 @@ _.Promise = {
             return chain(list, options).then(values => {
                 return new Promise((resolve, reject) => {
                     options.worker(elt).then(value => {
-                        values = options.reduce(values, value);
+                        values = options.reduce(values, value, elt);
 
                         if (isNaN(options.delay)){
                             return resolve(values);
