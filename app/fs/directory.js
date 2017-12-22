@@ -21,15 +21,6 @@ class Directory extends Node {
 
     // https://stackoverflow.com/questions/18112204/get-all-directories-within-directory-nodejs
     getSubDirectories(options){
-        options = _.defaults(options, {
-            force: false,
-            wrap: false
-        });
-
-        if (this.subDirectories && !options.force){
-            return Promise.resolve(this.subDirectories);
-        }
-
         return fs.readdir(this.fullPath).then(list => {
             return _.Promise.chain(list, {
                 worker: baseName => new Node({fullPath: this.fullPath + '/' + baseName}).isDirectory(),
@@ -44,18 +35,12 @@ class Directory extends Node {
         });
     }
 
-    getFiles(options){
-        options = _.defaults(options, {
-            force: false
-        });
-
-        if (this.files && !options.force){
-            return this.files;
-        }
-
-        return this.files = fs.readdirSync(this.fullPath)
-            .map(baseName => path.join(this.fullPath, baseName))
-            .filter(File.isA);
+    getFiles(){
+        return fs.readdir(this.fullPath)
+//            .then(list => Promise.resolve(list.map(baseName => this.fullPath + '/' + baseName)))
+            .then(_.Promise.map(baseName => this.fullPath + '/' + baseName))
+            .then(list => _.Promise.filter(list, fullPath => new Node({fullPath}).isFile()))
+            ;
     }
 
     getSubDirectoriesBaseNames(options) {

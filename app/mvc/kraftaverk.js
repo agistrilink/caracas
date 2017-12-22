@@ -139,7 +139,13 @@ _.Promise = {
         return chain(list, options);
     },
 
-    filter: (list, options) => {
+    filter: (list, options, worker) => {
+        // (list, worker, options) call
+        if (typeof options === 'function'){
+            [options, worker] = [worker || {}, options];
+            options.worker = worker;
+        }
+
         options = _.defaults(options, {
             worker: Promise.resolve(true),
             reduce: (list, bool, elt) => {
