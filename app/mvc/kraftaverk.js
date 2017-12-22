@@ -105,7 +105,7 @@ _.Promise = {
 
         // default chain just constructs an array with no delay and no processing on items
         options = _.defaults(options, {
-            worker: elt => _.newResolved(elt),
+            worker: elt => Promise.resolve(elt),
             delay: undefined,
             reduce: (values, value) => {
                 values.push(value);
@@ -139,6 +139,20 @@ _.Promise = {
         return chain(list, options);
     },
 
+    filter: (list, options) => {
+        options = _.defaults(options, {
+            worker: Promise.resolve(true),
+            reduce: (list, bool, elt) => {
+                if (bool){
+                    list.push(elt);
+                }
+                return list;
+            }
+        });
+
+        return _.Promise.chain(list, options);
+    },
+
     reduce: (list, worker, memo) => {
         if (list.length === 0){
             return _.newResolved(memo);
@@ -150,7 +164,7 @@ _.Promise = {
             .then(_.curry(worker, _, elt));
     },
 
-    filter: worker => {
+    filter_: worker => {
         return list => Promise.resolve(list.filter(worker));
     },
 

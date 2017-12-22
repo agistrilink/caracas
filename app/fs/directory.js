@@ -9,11 +9,14 @@ const _ = require('../mvc/kraftaverk'),
     _fsStat = _.promisy(fs.stat),
     _fsMkdir = _.promisy(fs.mkdir),
     _fsReaddir = _.promisy(fs.readdir),
-    _rimraf = _.promisy(require('rimraf'));
+    rimraf = require('./rimraf'),
+    _rimraf = _.promisy(rimraf);
 
 class Directory extends Node {
-    hasSubDir(baseName){
-        return this.getSubDirectories().indexOf(path.join(this.fullPath, baseName)) > -1;
+    hasSubDir(baseName, options){
+        return this.getSubDirectoriesBaseNames(options).then(baseNameList => {
+            return Promise.resolve(baseNameList.indexOf(baseName)) > -1;
+        });
     }
 
     // https://stackoverflow.com/questions/18112204/get-all-directories-within-directory-nodejs
@@ -57,7 +60,7 @@ class Directory extends Node {
 
     getSubDirectoriesBaseNames(options) {
         return this.getSubDirectories(options)
-            .map(fullPath => {return path.basename(fullPath)});
+            .then(_.Promise.map(fullPath => path.basename(fullPath)));
     }
     
     createDir(baseName){
@@ -87,9 +90,13 @@ class Directory extends Node {
     }
 
     deleteDir(baseName){
-        const fullPath = path.join(this.fullPath, baseName);
+        const fullPath = this.fullPath + '/' + baseName;
 
-        return _rimraf(fullPath);
+        return new Node({fullPath}).isDirectory().then(
+            isDirectory => isDirectory
+                ? _.promisy(rimraf.go).call(undefined, fullPath)
+                : Promise.reject('not a directory: ' + fullPath)
+        );
     }
 
     static isA(fullPath) {
