@@ -170,11 +170,15 @@ _.Promise = {
             .then(_.curry(worker, _, elt));
     },
 
-    filter_: worker => {
+    Filter: (options, worker) => {
+        return _.curry(_.Promise.filter, _, options, worker);
+    },
+
+    FilterSync: worker => {
         return list => Promise.resolve(list.filter(worker));
     },
 
-    map: worker => {
+    MapSync: worker => {
         return list => Promise.resolve(list.map(worker));
     },
 

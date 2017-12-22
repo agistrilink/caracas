@@ -38,14 +38,15 @@ class Directory extends Node {
     getFiles(){
         return fs.readdir(this.fullPath)
 //            .then(list => Promise.resolve(list.map(baseName => this.fullPath + '/' + baseName)))
-            .then(_.Promise.map(baseName => this.fullPath + '/' + baseName))
-            .then(list => _.Promise.filter(list, fullPath => new Node({fullPath}).isFile()))
+            .then(_.Promise.MapSync(baseName => this.fullPath + '/' + baseName))
+//            .then(list => _.Promise.filter(list, fullPath => new Node({fullPath}).isFile()))
+            .then(_.Promise.Filter(fullPath => new Node({fullPath}).isFile()))
             ;
     }
 
     getSubDirectoriesBaseNames(options) {
         return this.getSubDirectories(options)
-            .then(_.Promise.map(fullPath => path.basename(fullPath)));
+            .then(_.Promise.MapSync(fullPath => path.basename(fullPath)));
     }
     
     createDir(baseName){
